@@ -184,7 +184,7 @@ public class TableViewSorter implements Serializable {
                  }
 
 //                System.out.println("  KE: "+total_kinetic_energy);
-            } while ((n < 10) || (total_kinetic_energy > 500 && n < tableViews.size() * 100));
+            } while ((n < 10) || (total_kinetic_energy > 1000 && n < tableViews.size() * 50));
 
 //            for (TableView tv : tableViews) {
 //                System.out.println("Table:"+tv.getTable().getName() + " "+tv.getX()+", "+tv.getY());

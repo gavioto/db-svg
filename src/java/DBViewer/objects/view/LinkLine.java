@@ -33,14 +33,11 @@ public class LinkLine implements Serializable{
         this.startingTable=t;
         this.foreignkey=fk;
 
-        int padx = (this.getStartingTable().getWidth()+this.getForeignkey().getReference().getTable().getWidth())/4;
-        int pady = (this.getStartingTable().getHeight()+this.getForeignkey().getReference().getTable().getHeight())/4;
-
         // line main end points
-        this.x1 = t.getTableView().getX()+padx;
-        this.y1 = t.getTableView().getY()+pady;
-        this.x2 = fk.getReference().getTable().getTableView().getX()+padx;
-        this.y2 = fk.getReference().getTable().getTableView().getY()+pady;
+        this.x1 = t.getTableView().getX()+t.getWidth()/2;
+        this.y1 = t.getTableView().getY()+t.getHeight()/2;
+        this.x2 = fk.getReference().getTable().getTableView().getX()+fk.getReference().getTable().getWidth()/2;
+        this.y2 = fk.getReference().getTable().getTableView().getY()+fk.getReference().getTable().getHeight()/2;
 
         if ((x1-x2)!=0) {
             this.angle = Math.atan((y1-y2)/(x1-x2));
