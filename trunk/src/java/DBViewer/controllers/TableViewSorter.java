@@ -71,7 +71,7 @@ public class TableViewSorter implements Serializable {
     }
 
     public TableViewSorter() {
-        this.iDAO = new InternalDataDAO("~/test.db");
+        this.iDAO = InternalDataDAO.getInstance("~/test.db");
     }
     /**
      * Main action method, gets everything set up and runs the Force-Based sorting algorithm

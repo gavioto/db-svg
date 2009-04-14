@@ -15,7 +15,6 @@ public class ColumnObject implements Column {
    String comment;
    int ordinalValue;
    String dataType;
-   String autoIncrement;
    Table table;
 
    /**
@@ -172,22 +171,6 @@ public class ColumnObject implements Column {
       this.dataType = dataType;
    }
    
-   /**
-    * 
-    * @return
-    */
-   public String getAutoIncrement() {
-      return autoIncrement;
-   }
-
-   /**
-    * 
-    * @param autoIncrement
-    */
-   public void setAutoIncrement(String autoIncrement) {
-      this.autoIncrement = autoIncrement;
-   }
-
     public Table getTable() {
         return table;
     }

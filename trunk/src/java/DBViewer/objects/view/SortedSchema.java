@@ -41,7 +41,7 @@ public class SortedSchema implements Serializable{
             iDAO = (InternalDataDAO)session.getAttribute("iDAO");
         } catch (Exception e) {
             e.printStackTrace();
-            iDAO = new InternalDataDAO("~/");
+            iDAO = InternalDataDAO.getInstance("~/");
         }
         tvSorter = new TableViewSorter(iDAO);
         boolean isNewTables = readTables(session, dbi);
@@ -86,8 +86,12 @@ public class SortedSchema implements Serializable{
         if (!tablesSorted || isNewTables) {
             tableViews = tvSorter.SortAction(tables,false);
             tablesSorted = true;
+            lines = tvSorter.calcLines(tableViews);
+        } else {
+            for (LinkLine li : lines) {
+                li.recalculateLine();
+            }
         }
-        lines = tvSorter.calcLines(tableViews);
     }
 
 /**

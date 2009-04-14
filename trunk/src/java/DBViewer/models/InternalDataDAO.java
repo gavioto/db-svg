@@ -16,9 +16,26 @@ public class InternalDataDAO implements Serializable{
     private String driver = "org.sqlite.JDBC";
     private String path = "~/unset.db";
 
-    public InternalDataDAO (String path) {
+///////////////////  Singletoning it  ///////////////////
+   private static InternalDataDAO instance = null;
+
+   /**
+    * private constructor
+    */
+   private InternalDataDAO (String path) {
         this.path = path;
-    }
+   }
+
+   /**
+    * returns an instance of the DAO.
+    * @return
+    */
+   public static InternalDataDAO getInstance(String path) {
+      if (instance == null) {
+         instance = new InternalDataDAO(path);
+      }
+      return instance;
+   }
 
       public Connection getConnection() {
        try {
