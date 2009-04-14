@@ -43,7 +43,7 @@ public class MenuController extends HttpServlet {
             String path = (String)env.lookup("DBXMLPATH");
 
             String iDAOpath = (String)env.lookup("AppDBLocation");
-            InternalDataDAO iDAO = new InternalDataDAO(iDAOpath);
+            InternalDataDAO iDAO = InternalDataDAO.getInstance(iDAOpath);
             request.getSession().setAttribute("iDAO", iDAO);
             Connection conn = iDAO.getConnection();
             iDAO.createTables(conn);

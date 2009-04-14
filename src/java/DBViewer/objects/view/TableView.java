@@ -21,6 +21,7 @@ public class TableView implements Comparable<TableView>, Serializable{
     List<TableView> referencedBy = new ArrayList();
     List<TableView> ref = null;
     int id = 0;
+    boolean dirty = true;
 
 
     public TableView(Table t){
@@ -173,6 +174,7 @@ public class TableView implements Comparable<TableView>, Serializable{
 
     public void setX(double x) {
         this.x = x;
+        this.dirty = true;
     }
 
     public double getY() {
@@ -181,6 +183,7 @@ public class TableView implements Comparable<TableView>, Serializable{
 
     public void setY(double y) {
         this.y = y;
+        this.dirty = true;
     }
 
     public double getVelocityX() {
@@ -205,6 +208,22 @@ public class TableView implements Comparable<TableView>, Serializable{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
+    }
+    
+    public void setDirty() {
+        this.dirty = true;
+    }
+
+    public void setClean() {
+        this.dirty = false;
     }
 
     /**

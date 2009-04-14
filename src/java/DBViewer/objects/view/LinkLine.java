@@ -30,6 +30,10 @@ public class LinkLine implements Serializable{
     protected static double arrowAngle = 0.52;
 
     public LinkLine (Table t, ForeignKey fk) {
+        calculateLine(t, fk);
+    }
+
+    private void calculateLine (Table t, ForeignKey fk) {
         this.startingTable=t;
         this.foreignkey=fk;
 
@@ -58,6 +62,13 @@ public class LinkLine implements Serializable{
         this.xa3 = xa1 + (rtl ? -1 : 1) * (arrowLength * Math.cos(angle - arrowAngle));
         this.ya3 = ya1 + (rtl ? -1 : 1) * (arrowLength * Math.sin(angle - arrowAngle));
 
+        t.getTableView().setClean();
+    }
+
+    public void recalculateLine(){
+        if (this.startingTable.getTableView().isDirty() || this.foreignkey.getReference().getTable().getTableView().isDirty()) {
+            calculateLine(this.startingTable, this.foreignkey);
+        }
     }
 
     public ForeignKey getForeignkey() {

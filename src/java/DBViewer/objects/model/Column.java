@@ -15,17 +15,6 @@ public interface Column extends Serializable{
     *
     * @return
     */
-   String getAutoIncrement();
-
-   /**
-    *
-    * @param autoIncrement
-    */
-   void setAutoIncrement(String autoIncrement);
-   /**
-    *
-    * @return
-    */
    String getDataType();
 
    /**
