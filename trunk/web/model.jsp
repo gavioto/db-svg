@@ -54,32 +54,16 @@ $(function() {
       svg = $('#svgwindow').svg({loadURL: 'schema.svg.jsp'});
 
       svg.mousemove(function (e){
-       var scrOfX = 0, scrOfY = 0;
-       /*
-          if( typeof( window.pageYOffset ) == 'number' ) {
-            //Netscape compliant
-            scrOfY = window.pageYOffset;
-            scrOfX = window.pageXOffset;
-          } else if( document.body && ( document.body.scrollLeft || document.body.scrollTop ) ) {
-            //DOM compliant
-            scrOfY = document.body.scrollTop;
-            scrOfX = document.body.scrollLeft;
-          } else if( document.documentElement && ( document.documentElement.scrollLeft || document.documentElement.scrollTop ) ) {
-            //IE6 standards compliant mode
-            scrOfY = document.documentElement.scrollTop;
-            scrOfX = document.documentElement.scrollLeft;
-          }*/
-
            if (onTable) {
-                //DOM compliant
-                scrOfY = document.body.scrollTop;
-                scrOfX = document.body.scrollLeft;
+              var scr = getScrollXY();
+              var scrOfX = scr[0], scrOfY = scr[1];
+              
               var ex = e.pageX;
               var ey = e.pageY;
 
-              currentDragx = ex+transx+scrOfX;
-              currentDragy = ey+transy+scrOfY;
-              //$('#coord').html('x:'+(currentDragx)+' y:'+(currentDragy)+' '+scrOfX+','+scrOfY);
+              currentDragx = (ex+transx+scrOfX);
+              currentDragy = (ey+transy+scrOfY);
+              $('#coord').html('x:'+(currentDragx)+' y:'+(currentDragy)+' '+scrOfX+','+scrOfY);
               currentTable.setAttribute('transform','translate('+(currentDragx)+','+(currentDragy)+')');
           } 
       });
@@ -105,6 +89,25 @@ $(function() {
 
     function tableMove(evt) {
     }
+    function getScrollXY() {
+	var sX = 0, sY = 0;
+          if( document.body && ( document.body.scrollLeft || document.body.scrollTop ) && ( document.body.scrollLeft!=0 || document.body.scrollTop!=0 ) ) {
+              // DOM compliant
+                sY = document.body.scrollTop; sX = document.body.scrollLeft;
+          } else if( typeof( window.pageYOffset ) == 'number' && window.pageYOffset!=0) {
+              //Netscape compliant
+                sY = window.pageYOffset; sX = window.pageXOffset;
+          } else if( document.documentElement && ( document.documentElement.scrollLeft || document.documentElement.scrollTop )  && ( document.documentElement.scrollLeft!=0 || document.documentElement.scrollTop!=0 )) {
+              //IE6 standards compliant mode
+                sY = document.documentElement.scrollTop; sX = document.documentElement.scrollLeft;
+          }
+              $('#coord').html('x:'+(currentDragx)+' y:'+(currentDragy)+' '+sX+','+sY);
+	return [ sX, sY ];
+}
+function isWebKit(){
+    return RegExp(" AppleWebKit/").test(navigator.userAgent);
+}
+
 
 </script>
     </head>
@@ -125,10 +128,11 @@ $(function() {
 
       <!--  <a href="#" id="zoomin">Zoom In</a>
         <a href="#" id="zoomout">Zoom Out</a> -->
-        <span style="display:none; float:right; padding-right:20px;" id="coord">x-y</span>
+        <span style="display:visible; float:right; padding-right:20px;" id="coord">x-y</span>
         <div class="svgwrapper" style="width:<%= currentSchema.getWidth() %>px;height:<%= currentSchema.getHeight() %>px;">
             <div id="svgwindow" class="svgwindow"></div>
         </div>
     </div>
+    <div style="padding-left:200px;"><a href="javascript:getScrollXY();">get the scrolling offsets</a></div>
     </body>
 </html>

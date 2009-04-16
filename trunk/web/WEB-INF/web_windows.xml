@@ -22,12 +22,12 @@
         <description>Path to Available DB definitions</description>
         <env-entry-name>DBXMLPATH</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>/DB-SVG/dbs.xml</env-entry-value>
+        <env-entry-value>C:\DB-SVG\dbs.xml</env-entry-value>
     </env-entry>
     <env-entry>
         <description>Path to Location of SQLite App DB</description>
         <env-entry-name>AppDBLocation</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>/DB-SVG/DB-SVG.db</env-entry-value>
+        <env-entry-value>C:\DB-SVG\DB-SVG.db</env-entry-value>
     </env-entry>
     </web-app>
