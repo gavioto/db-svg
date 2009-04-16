@@ -25,7 +25,11 @@ import java.sql.*;
  */
 public class MenuController extends HttpServlet {
 
-    String[] ParameterColumns = {"title","url","driver","username","password"};
+    private static String[] PossibleColumns = {"title","url","driver","username","password","pages",
+                                               "Title","Url","Driver","Username","Password","Pages",
+                                               "TITLE","URL","DRIVER","USERNAME","PASSWORD","PAGES"};
+
+    private static String[] ParameterColumns = {"title","url","driver","username","password","pages"};
 
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -90,59 +94,31 @@ public class MenuController extends HttpServlet {
         }
     }
 private Map<String,ConnectionWrapper> getDBPrefs (String path) throws Exception{
+
+    XMLStringMapReader xsmr = new XMLStringMapReader();
+    List<Map<String,String>> dbVals = xsmr.ParseFile(path, PossibleColumns);
+    
     Map<String,ConnectionWrapper> prefs = new HashMap<String,ConnectionWrapper>();
-    List<List<String>> DBparams = openXMLFile(path);
     int i = 1;
-    for (List<String> c : DBparams ) {
+    for (Map<String,String> dbentry : dbVals) {
         ConnectionWrapper cw = new ConnectionWrapper();
         cw.setId(i);
-        cw.setTitle(c.get(0));
-        cw.setUrl(c.get(1));
-        cw.setDriver(c.get(2));
-        cw.setUsername(c.get(3));
-        cw.setPassword(c.get(4));
+        cw.setTitle(dbentry.get(ParameterColumns[0]));
+        cw.setUrl(dbentry.get(ParameterColumns[1]));
+        cw.setDriver(dbentry.get(ParameterColumns[2]));
+        cw.setUsername(dbentry.get(ParameterColumns[3]));
+        cw.setPassword(dbentry.get(ParameterColumns[4]));
+        String pagesString = dbentry.get(ParameterColumns[5]);
+        try {
+            int pages = Integer.parseInt(pagesString);
+            if (pages>0) cw.setPages(pages);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         prefs.put(""+cw.getId(),cw);
         i++;
     }
     return prefs;
-}
- /**
-  * creates a new instance of XMLTableWriter, creates a DOM document from the file
-  *  on disk, then uses that document to get the column header array and the List
-  *  of lists.  throws an exception if it runs into any problems
-  */
-private List<List<String>> openXMLFile (String path) throws Exception{
-    XMLReadWriter xwriter = new XMLReadWriter();
-
-    Document doc = xwriter.DocOpen(path);
-    String[] cols = xwriter.readInColumnNames(doc);
-    for(int i=0; i<cols.length; i++){
-        if (!cols[i].equals(ParameterColumns[i])) {
-            throw new Exception("Invalid DB definition XML file");
-        }
-    }
-    return xwriter.readInList(doc,cols);
-}
-
- /**
-  * A generic save method.  this should be directed to the desired private save
-  *  method.  in this case it is XML.
-  */
-public void saveFile (String path, List<List<String>> data){
-    saveXMLFile(path,data);
-}
-
- /**
-  * creates a new instance of XMLTableWriter, and then feeds it the file path,
-  * the List of Lists, and the Column Headers array.
-  */
-private void saveXMLFile (String path, List<List<String>> data){
-    XMLReadWriter xwriter = new XMLReadWriter();
-    try {
-        xwriter.writeOut(path, data, ParameterColumns);
-    } catch (Exception ex) {
-        ex.printStackTrace();
-    }
 }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

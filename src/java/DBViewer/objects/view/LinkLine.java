@@ -3,6 +3,7 @@ package DBViewer.objects.view;
 
 import DBViewer.objects.model.*;
 import java.io.Serializable;
+import java.util.*;
 
 /**
  *
@@ -61,14 +62,16 @@ public class LinkLine implements Serializable{
         this.ya2 = ya1 + (rtl ? -1 : 1) * (arrowLength * Math.sin(angle + arrowAngle));
         this.xa3 = xa1 + (rtl ? -1 : 1) * (arrowLength * Math.cos(angle - arrowAngle));
         this.ya3 = ya1 + (rtl ? -1 : 1) * (arrowLength * Math.sin(angle - arrowAngle));
-
-        t.getTableView().setClean();
     }
 
-    public void recalculateLine(){
+    public List<TableView> recalculateLine(){
+        List<TableView> returner = new ArrayList();
         if (this.startingTable.getTableView().isDirty() || this.foreignkey.getReference().getTable().getTableView().isDirty()) {
             calculateLine(this.startingTable, this.foreignkey);
+            returner.add(this.startingTable.getTableView());
+            returner.add(this.foreignkey.getReference().getTable().getTableView());
         }
+        return returner;
     }
 
     public ForeignKey getForeignkey() {

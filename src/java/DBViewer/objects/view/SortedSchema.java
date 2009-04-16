@@ -88,8 +88,12 @@ public class SortedSchema implements Serializable{
             tablesSorted = true;
             lines = tvSorter.calcLines(tableViews);
         } else {
+            List<TableView> tablesToClean = new ArrayList();
             for (LinkLine li : lines) {
-                li.recalculateLine();
+                tablesToClean.addAll(li.recalculateLine());
+            }
+            for (TableView tv : tablesToClean) {
+                tv.setClean();
             }
         }
     }
