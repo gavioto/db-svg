@@ -117,6 +117,69 @@ h3 {
     font-size:1.2em !important;
     color: #4c4a41;
 }
+
+a {
+    color:#444444;
+    text-decoration: none;
+}
+a:hover {
+    color:#666666;
+    text-decoration: underline;
+}
+
+.menu {
+    padding:2px;
+    margin-bottom:3px;
+}
+
+.menu a {
+    font-size:small;
+    color:#444444;
+    background-color: #dfdfdf;
+    text-decoration: none;
+    border: solid 1px #cdcdcd;
+    padding:2px;
+    padding-left:5px;
+    padding-right:5px;
+    margin:1px;
+     -moz-border-radius: 3px;
+     -webkit-border-radius: 3px;
+}
+.menu a:hover {
+    color:#333333;
+    background-color: #d9d9d9;
+    border: solid 1px #bcbcbc;
+}
+
+.tablayer {
+    display:none;
+    font-size:small;
+    padding-right:15px;
+}
+.tablayer a {
+    margin-top:-4px;
+    float:right;
+    padding-right:5px;
+    text-decoration: none !important;
+}
+
+.tab {
+    background-color: #d8dcdd;
+    border:1px solid #444;
+    border-top:0px;
+    width:auto;
+    padding:5px;
+    padding-top:0px;
+    padding-bottom:6px;
+    height:1em;
+     -moz-border-radius: 0px 0px 10px 10px;
+     -webkit-border-radius: 0px 0px 10px 10px;
+}
+.tab:hover {
+    color:#333333;
+    background-color: #c8d2d4;
+}
+
 ul {
     margin:0px;
 }
