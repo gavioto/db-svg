@@ -33,7 +33,9 @@ Same as above, except create the directory at C:\DB-SVG\, and you will need to m
 tomcat server context.xml settings to the following: (CATALINAHOME\conf\context.xml)
     <WatchedResource>WEB-INF/web_windows.xml</WatchedResource>
     
-    Alternatively you can download the source, rename web_windows.xml to web.xml and rebuild the war file.
+    Alternatively may be able to change the path in the web.xml 
+    after tomcat has unpacked the war, or you can download the source, 
+    rename web_windows.xml to web.xml and rebuild the war file.
     
     
     

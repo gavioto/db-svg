@@ -129,7 +129,7 @@ a:hover {
 
 .menu {
     padding:2px;
-    margin-bottom:3px;
+    margin-bottom:5px;
 }
 
 .menu a {
@@ -138,17 +138,22 @@ a:hover {
     background-color: #dfdfdf;
     text-decoration: none;
     border: solid 1px #cdcdcd;
-    padding:2px;
     padding-left:5px;
     padding-right:5px;
+    padding-bottom:3px;
     margin:1px;
      -moz-border-radius: 3px;
      -webkit-border-radius: 3px;
 }
 .menu a:hover {
     color:#333333;
-    background-color: #d9d9d9;
+    background-color: #dcdcdd;
     border: solid 1px #bcbcbc;
+    -o-box-shadow: 2px 2px 5px #d1d1d1;
+    -icab-box-shadow: 2px 2px 5px #d1d1d1;
+    -khtml-box-shadow: 2px 2px 5px #d1d1d1;
+    -moz-box-shadow: 2px 2px 5px #d1d1d1;
+    -webkit-box-shadow: 2px 2px 5px #d1d1d1;
 }
 
 .tablayer {
@@ -174,6 +179,12 @@ a:hover {
     height:1em;
      -moz-border-radius: 0px 0px 10px 10px;
      -webkit-border-radius: 0px 0px 10px 10px;
+    -o-box-shadow: 2px 2px 1px #AAA;
+    -icab-box-shadow: 2px 2px 3px #CCC;
+    -khtml-box-shadow: 2px 2px 3px #CCC;
+    -moz-box-shadow: 2px 2px 3px #CCC;
+    -webkit-box-shadow: 2px 2px 3px #CCC;
+
 }
 .tab:hover {
     color:#333333;
