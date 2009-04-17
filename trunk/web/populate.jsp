@@ -9,6 +9,7 @@
 <%@page import="java.util.*" %>
 <%@page import="java.sql.*" %>
 <%@page import="DBViewer.objects.model.*" %>
+<%@page import="DBViewer.objects.view.*" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
@@ -30,36 +31,23 @@
         </div>
     </div>
     <div id="content" class="contentBox">
-        <a href="Menu">Back to Menu</a>
-        <a href="model.jsp?dbi=<%= request.getParameter("dbi") %>">Continue to SVG Data Model</a><br /><br />
+        <div class="menu">
+        <a href="Menu">Back to Menu</a><a href="model.jsp?dbi=<%= request.getParameter("dbi") %>">SVG Diagram</a>
+        </div>
         <%
-    Map<String, Table> tables = new HashMap<String, Table>();
+
     String dbi = request.getParameter("dbi");
 
-    if (request.getSession().getAttribute("CurrentSchema")==null || request.getSession().getAttribute("CurrentSchema").getClass()!=tables.getClass() || !request.getSession().getAttribute("CurrentDBI").equals(dbi)) {
-        Object dbc = request.getSession().getAttribute("DB-Connections");
-        Map<String,ConnectionWrapper> cwmap = new HashMap<String,ConnectionWrapper>();
-        
-        if (dbc!=null && dbc.getClass()==cwmap.getClass()) {
-          cwmap = (Map<String,ConnectionWrapper>)dbc;
+    SortedSchema currentSchema = new SortedSchema();
+    if (request.getSession().getAttribute("CurrentSchema")==null || request.getSession().getAttribute("CurrentSchema").getClass()!=currentSchema.getClass()) {
+        request.getSession().setAttribute("CurrentSchema",currentSchema);
+    } else {
+        currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
+    }
+    currentSchema.prepareSchema(request.getSession(), dbi);
 
-          out.println("<h2>DB-Object Mapping: </h2>");
-          MainDAO dao = MainDAO.getInstance();
-          try {
-             Connection conn = cwmap.get(dbi).getConnection();
-             tables = dao.getTables(conn,cwmap.get(dbi).getTitle());
-             request.getSession().setAttribute("CurrentSchema",tables);
-             request.getSession().setAttribute("CurrentDBI",dbi);
-          } catch (Exception e) {
-             e.printStackTrace();
-          }
-          } else {
-                out.println("Incorrect Index Parameter");
-            }
-        }
-
-         tables = (Map<String, Table>)request.getSession().getAttribute("CurrentSchema");
-          for (Table t : tables.values()) {
+          for (TableView tv : currentSchema.getTableViews()) {
+              Table t = tv.getTable();
              out.println("<h3 class=\"ui-widget-header ui-corner-all\">"+t.getName()+"</h3><ul>");
              Map<String,Column> cols = t.getColumns();
              for (Column c : cols.values()) {

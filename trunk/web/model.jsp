@@ -120,19 +120,20 @@ function isWebKit(){
         </div>
     </div>
     <div id="content" class="modelContentBox">
-        <a href="Menu">Back to Menu</a>
-        <a href="populate.jsp?dbi=<%= dbi %>">View Text Version</a>
-        <a href="model.jsp?dbi=<%= dbi %>&refresh=true">Re-sort</a>
-        <a href="model.jsp?dbi=<%= dbi %>&save=true">Save View</a>
-        <a href="schema.svg.jsp" target="_blank">Download Data Model</a>
-
+        <div class="tablayer">
+<a href="#"><div class="tab">Tab 2</div></a>
+<a href="#"><div class="tab">Tab 1</div></a>
+        </div>
+        <div class="menu">
+            <a href="Menu">Back to Menu</a><a href="populate.jsp?dbi=<%= dbi %>">Text Version</a><a href="model.jsp?dbi=<%= dbi %>&refresh=true">Re-sort</a><a href="model.jsp?dbi=<%= dbi %>&save=true">Save View</a><a href="schema.svg.jsp" target="_blank">Download Diagram</a>
+        </div>
       <!--  <a href="#" id="zoomin">Zoom In</a>
         <a href="#" id="zoomout">Zoom Out</a> -->
-        <span style="display:visible; float:right; padding-right:20px;" id="coord">x-y</span>
+        <span style="display:none; float:right; padding-right:20px;" id="coord">x-y</span>
         <div class="svgwrapper" style="width:<%= currentSchema.getWidth() %>px;height:<%= currentSchema.getHeight() %>px;">
             <div id="svgwindow" class="svgwindow"></div>
         </div>
     </div>
-    <div style="padding-left:200px;"><a href="javascript:getScrollXY();">get the scrolling offsets</a></div>
+    <div style="padding-left:200px; display:none;"><a href="javascript:getScrollXY();">get the scrolling offsets</a></div>
     </body>
 </html>
