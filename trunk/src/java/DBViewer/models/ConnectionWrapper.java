@@ -16,7 +16,6 @@ public class ConnectionWrapper implements Serializable{
     private String driver = "";
     private String username = "";
     private String password = "";
-    private int pages = 1;
 
     public String getDriver() {
         return driver;
@@ -64,16 +63,7 @@ public class ConnectionWrapper implements Serializable{
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public int getPages() {
-        return pages;
-    }
-
-    public void setPages(int pages) {
-        this.pages = pages;
-    }
-    
+    }    
 
       public Connection getConnection() {
        try {

@@ -61,24 +61,26 @@ public class MenuController extends HttpServlet {
             out.println("<html>" +
                     "    <head>" +
                     "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" +
-                    "        <title>DB-SVG Menu</title>" +
+                    "        <title>DB-SVG | Menu</title>" +
                     "        <link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"css/style.css\" />" +
                     "        <link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"css/jq-ui.css\" />" +
                     "        <script type=\"text/javascript\" src=\"js/jquery.js\"></script>" +
                     "   </head>" +
                     "   <body>" +
                     "    <div class=\"titleBox\">" +
+                    "       <div class=\"titleHeader\">" +
                     "        <div class=\"titleLeft\"></div>" +
                     "        <div class=\"titleRight\"></div>" +
                     "            <div class=\"titleBody\">" +
                     "            <h1>DB-SVG Menu</h1>" +
                     "        </div>" +
+                    "       </div>" +
                     "    </div>" +
                     "    <div id=\"content\" class=\"contentBoxMenu\">" +
                     "<h2>Exploreable Databases:</h2>");
             out.println("<ul>");
             for (ConnectionWrapper cw : prefs.values()) {
-                out.println("<li><a href=\"model.jsp?dbi="+cw.getId()+"\" >"+cw.getTitle()+"</a></li>");
+                out.println("<li><a href=\"model.jsp?dbi="+cw.getId()+"\" >"+cw.getTitle()+"</a>  <span class=\"menusetup\"><a href=\"setup.jsp?dbi="+cw.getId()+"\">setup</a></span></li>");
             }
             out.println("</ul>");
             out.println("</div>");
@@ -106,15 +108,8 @@ private Map<String,ConnectionWrapper> getDBPrefs (String path) throws Exception{
         cw.setTitle(dbentry.get(ParameterColumns[0]));
         cw.setUrl(dbentry.get(ParameterColumns[1]));
         cw.setDriver(dbentry.get(ParameterColumns[2]));
-        cw.setUsername(dbentry.get(ParameterColumns[3]));
-        cw.setPassword(dbentry.get(ParameterColumns[4]));
-        String pagesString = dbentry.get(ParameterColumns[5]);
-        try {
-            int pages = Integer.parseInt(pagesString);
-            if (pages>0) cw.setPages(pages);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
+        cw.setUsername(dbentry.get(ParameterColumns[3])!=null ? dbentry.get(ParameterColumns[3]) :"");
+        cw.setPassword(dbentry.get(ParameterColumns[4])!=null ? dbentry.get(ParameterColumns[4]) :"");
         prefs.put(""+cw.getId(),cw);
         i++;
     }

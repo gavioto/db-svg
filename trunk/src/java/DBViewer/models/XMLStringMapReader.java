@@ -96,7 +96,7 @@ public List<Map<String,String>> ParseFile(String path, String[] entryValueNames)
  */
     public static void main (String[] args) {
         XMLStringMapReader xsmr = new XMLStringMapReader();
-        String[] entyVals = {"title","url","driver","username","password","pages","Title","Url","Driver","Username","Password","Pages", "URL"};
+        String[] entyVals = {"title","url","driver","username","password","Title","Url","Driver","Username","Password", "URL"};
         List<Map<String,String>> dbVals = xsmr.ParseFile("/DB-SVG/dbs.xml", entyVals);
 
         for (Map<String,String> dbentry : dbVals) {
