@@ -24,6 +24,7 @@ public class SortedSchema implements Serializable{
     MainDAO dao = MainDAO.getInstance();
     TableViewSorter tvSorter;
     InternalDataDAO iDAO;
+    String name = "";
 
     boolean tablesSorted = false;
 
@@ -79,14 +80,14 @@ public class SortedSchema implements Serializable{
     }
 
     private void prepareTableViews(boolean isNewTables) {
-//        if (isNewTables){
-//            tableViews = tvSorter.SortAction(tables,false);
-//            tablesSorted = true;
-//        }
         if (!tablesSorted || isNewTables) {
             tableViews = tvSorter.SortAction(tables,false);
             tablesSorted = true;
             lines = tvSorter.calcLines(tableViews);
+
+            if (tableViews.size()>0) {
+                this.setName(tableViews.get(0).getTable().getSchemaName());
+            }
         } else {
             List<TableView> tablesToClean = new ArrayList();
             for (LinkLine li : lines) {
@@ -155,8 +156,6 @@ public class SortedSchema implements Serializable{
                     schema = t.getTable().getSchemaName();
                 }
             }
-            if (success)
-                iDAO.schemaSortSaved(schema, conn);
             
             conn.close();
         } catch (Exception e) {
@@ -222,6 +221,14 @@ public class SortedSchema implements Serializable{
 
     public void setLines(List<LinkLine> lines) {
         this.lines = lines;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     

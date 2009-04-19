@@ -9,11 +9,23 @@ import java.sql.*;
 public class SQLiteTest {
 public static void main(String[] args) throws Exception {
       Class.forName("org.sqlite.JDBC");
-      Connection conn = DriverManager.getConnection("jdbc:sqlite:/home/horizon/NetBeansProjects/DB-SVG/DB-SVG.db");
+      Connection conn = DriverManager.getConnection("jdbc:sqlite:/DB-SVG/DB-SVG-2.db");
       Statement stmt1 = conn.createStatement();
-      //stat.executeUpdate("drop table if exists people;");
-      stmt1.executeUpdate("CREATE TABLE IF NOT EXISTS schema (title PRIMARY KEY, sorted BOOLEAN DEFAULT 0); ");
-      stmt1.executeUpdate(" CREATE TABLE IF NOT EXISTS table_position (name, schema, x_pos FLOAT, y_pos FLOAT, UNIQUE (name, schema));");
+      stmt1.executeUpdate("drop table if exists schema;");
+      stmt1.executeUpdate("drop table if exists table_position;");
+      stmt1.executeUpdate("drop table if exists page;");
+      stmt1.executeUpdate("drop table if exists schema_page_table;");
+      stmt1.executeUpdate("CREATE TABLE IF NOT EXISTS schema (title PRIMARY KEY); ");
+      stmt1.executeUpdate(" CREATE TABLE IF NOT EXISTS table_position (name, schema, x_pos FLOAT, y_pos FLOAT," +
+              " UNIQUE (name, schema), " +
+              " FOREIGN KEY (schema) REFERENCES schema(title));");
+      stmt1.executeUpdate(" CREATE TABLE IF NOT EXISTS page (id INTEGER PRIMARY KEY, orderid INTEGER, title ); ");
+      stmt1.executeUpdate(" CREATE TABLE IF NOT EXISTS schema_page_table (pageid INTEGER, tablename, schema," +
+              " UNIQUE (pageid, tablename, schema), " +
+              " FOREIGN KEY (pageid) REFERENCES page(id), " +
+              " FOREIGN KEY (tablename) REFERENCES table_position(name), " +
+              " FOREIGN KEY (schema) REFERENCES schema(title) " +
+              "); ");
       PreparedStatement ps = conn.prepareStatement(
           "INSERT OR REPLACE INTO table_position VALUES (?,?,?,?);");
 

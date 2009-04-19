@@ -51,8 +51,17 @@ public class InternalDataDAO implements Serializable{
       public void createTables(Connection conn){
           try {
               Statement st = conn.createStatement();
-              st.executeUpdate("CREATE TABLE IF NOT EXISTS schema (title PRIMARY KEY, sorted BOOLEAN DEFAULT 0); ");
-              st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_position (name, schema, x_pos FLOAT, y_pos FLOAT, UNIQUE (name, schema));");
+              st.executeUpdate("CREATE TABLE IF NOT EXISTS schema (title PRIMARY KEY); ");
+              st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_position (name, schema, x_pos FLOAT, y_pos FLOAT," +
+                      " UNIQUE (name, schema), " +
+                      " FOREIGN KEY (schema) REFERENCES schema(title));");
+              st.executeUpdate(" CREATE TABLE IF NOT EXISTS page (id INTEGER PRIMARY KEY, orderid INTEGER, title ); ");
+              st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema_page_table (pageid INTEGER, tablename, schema," +
+                      " UNIQUE (pageid, tablename, schema), " +
+                      " FOREIGN KEY (pageid) REFERENCES page(id), " +
+                      " FOREIGN KEY (tablename) REFERENCES table_position(name), " +
+                      " FOREIGN KEY (schema) REFERENCES schema(title) " +
+                      "); ");
           } catch (Exception e) {
               e.printStackTrace();
           } 
@@ -68,21 +77,6 @@ public class InternalDataDAO implements Serializable{
               ps.setString(2, t.getTable().getSchemaName());
               ps.setDouble(3, t.getX());
               ps.setDouble(4, t.getY());
-
-              ps.executeUpdate();
-
-          } catch (Exception e) {
-              e.printStackTrace();
-          }
-      }
-
-      public void schemaSortSaved(String schema,Connection conn) {
-          verifySchema(schema, conn);
-          String updateSQL = "UPDATE schema SET sorted=1 WHERE title = ?;";
-          try {
-              PreparedStatement ps = conn.prepareStatement(updateSQL);
-
-              ps.setString(1, schema);
 
               ps.executeUpdate();
 
@@ -129,4 +123,11 @@ public class InternalDataDAO implements Serializable{
           }
           return coordsFound;
       }
+
+    public static void main(String[] args) throws Exception {
+        InternalDataDAO iDAO =  InternalDataDAO.getInstance("/DB-SVG/DB-SVG-2.db");
+        Connection conn = iDAO.getConnection();
+        iDAO.createTables(conn);
+        
+    }
 }

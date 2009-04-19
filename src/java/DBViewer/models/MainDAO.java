@@ -107,7 +107,7 @@ public class MainDAO implements Serializable{
       int maxWidth=0;
 
       maxWidth = (int)(table.getName().length()*1.5);
-
+      
       DatabaseMetaData meta = conn.getMetaData();
       ResultSet rs = meta.getColumns(null, null, table.getName(), null);
 
@@ -122,15 +122,20 @@ public class MainDAO implements Serializable{
 
       table.setWidth(CHAR_WIDTH * maxWidth + PAD_WIDTH);
       table.setHeight(CHAR_HEIGHT * table.getColumns().size() + PAD_HEIGHT);
-      
-      ResultSet rs2 = meta.getPrimaryKeys(null, null, table.getName());
 
-      while (rs2.next()) {
-         String columnName = rs2.getString("COLUMN_NAME");
-         PrimaryKey pk = table.getColumns().get(columnName).transformToPK();
-         table.getColumns().put(columnName, pk);
-         table.getPrimaryKeys().put(columnName, pk);
+      try {
+          rs = meta.getPrimaryKeys(null, null, table.getName());
+
+          while (rs.next()) {
+             String columnName = rs.getString("COLUMN_NAME");
+             PrimaryKey pk = table.getColumns().get(columnName).transformToPK();
+             table.getColumns().put(columnName, pk);
+             table.getPrimaryKeys().put(columnName, pk);
+          }
+      } catch (Exception e) {
+          System.out.println(table.getName()+" Has Primary Key Issues.");
       }
+      rs.close();
 
       return table;
    }

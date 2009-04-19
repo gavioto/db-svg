@@ -11,7 +11,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>DB-SVG Data Model Explorer</title>
+        <title>DB-SVG | Data Model Explorer</title>
         <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="css/jquery.svg.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="css/jq-ui.css" />
@@ -36,13 +36,6 @@ var currentDragy;
     }
     currentSchema.prepareSchema(request.getSession(), dbi);
 
-    boolean refresh = request.getParameter("refresh")!=null;
-    if (refresh)
-        currentSchema.resortTableViews(true);
-
-    boolean save = request.getParameter("save")!=null;
-    if (save)
-        currentSchema.saveTablePositions();
 
 %>
 
@@ -67,6 +60,22 @@ $(function() {
               currentTable.setAttribute('transform','translate('+(currentDragx)+','+(currentDragy)+')');
           } 
       });
+      $('#saver').click(function(){
+           $.post("ajaxFunctions.jsp", { "save": "true" },
+           function(data){
+             alert(data);
+           });
+           return false;
+      });
+
+      $('#sorter').click(function(){
+           $.post("ajaxFunctions.jsp", { "refresh": "true" },
+           function(data){
+            // alert("Data Loaded: " + data);
+            location.reload(true);
+           });
+           return false;
+      });
 });
 
     function tableDown(evt) {
@@ -78,7 +87,7 @@ $(function() {
         onTable = false;
         var xx = currentDragx;
         var yy = currentDragy;
-        $.post("saveData.jsp", { "name": evt.id, "x": currentDragx, "y": currentDragy },
+        $.post("ajaxFunctions.jsp", { "name": evt.id, "x": currentDragx, "y": currentDragy },
            function(data){
             // alert("Data Loaded: " + data);
             location.reload(true);
@@ -125,7 +134,7 @@ function isWebKit(){
 <a href="#"><div class="tab">Tab 1</div></a>
         </div>
         <div class="menu">
-            <a href="Menu">Back to Menu</a><a href="populate.jsp?dbi=<%= dbi %>">Text Version</a><a href="model.jsp?dbi=<%= dbi %>&refresh=true">Re-sort</a><a href="model.jsp?dbi=<%= dbi %>&save=true">Save View</a><a href="schema.svg.jsp" target="_blank">Download Diagram</a>
+            <a href="Menu">Back to Menu</a><a href="setup.jsp?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#ajaxFunctions.jsp?refresh=true">Re-sort</a><a id="saver" href="#ajaxFunctions.jsp?save=true">Save</a><a href="schema.svg.jsp" target="_blank">Download</a>
         </div>
       <!--  <a href="#" id="zoomin">Zoom In</a>
         <a href="#" id="zoomout">Zoom Out</a> -->

@@ -15,10 +15,16 @@ import org.w3c.dom.*;
  */
 public class Tester {
 
-    private static String url = "jdbc:mysql://localhost:3306/movelib";
-    private static String driver = "com.mysql.jdbc.Driver";
-    private static String username = "test";
-    private static String password = "zarahemla";
+//    private static String url = "jdbc:mysql://localhost:3306/movelib";
+//    private static String driver = "com.mysql.jdbc.Driver";
+//    private static String username = "test";
+//    private static String password = "zarahemla";
+
+
+    private static String url = "jdbc:sqlite:/DB-SVG/DB-SVG.db";
+    private static String driver = "org.sqlite.JDBC";
+    private static String username = "";
+    private static String password = "";
 
    public static void main(String[] args) {
 
@@ -28,7 +34,7 @@ public class Tester {
       Map<String, Table> tables = new HashMap();
       try {
          Connection conn = Tester.getConnection();
-         tables = dao.getTables(conn, "movelib");
+         tables = dao.getTables(conn, "test");
       } catch (Exception e) {
          e.printStackTrace();
       }
@@ -52,7 +58,8 @@ public class Tester {
       }
       System.out.println(""); 
 
-      TableViewSorter tvSorter = new TableViewSorter();
+      InternalDataDAO iDAO = InternalDataDAO.getInstance("/DB-SVG/DB-SVG.db");
+      TableViewSorter tvSorter = new TableViewSorter(iDAO);
       List<TableView> tableViews = tvSorter.SortAction(tables,false);
       List<LinkLine> lines = tvSorter.calcLines(tableViews);
       for (LinkLine l : lines) {
