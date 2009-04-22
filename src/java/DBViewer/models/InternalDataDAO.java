@@ -37,11 +37,14 @@ public class InternalDataDAO implements Serializable{
       return instance;
    }
 
-      public Connection getConnection() {
+      public Connection getConnection() throws SQLException {
        try {
         Class.forName(driver);
         Connection conn = DriverManager.getConnection(url+path);
         return conn;
+       } catch (SQLException e){
+          System.out.println("Internal DAO path incorrect.");
+          throw e;
        } catch (Exception e){
           e.printStackTrace();
        }
@@ -130,4 +133,13 @@ public class InternalDataDAO implements Serializable{
         iDAO.createTables(conn);
         
     }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+    
 }

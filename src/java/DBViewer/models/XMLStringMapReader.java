@@ -1,7 +1,7 @@
 
 package DBViewer.models;
 
-import java.io.File;
+import java.io.*;
 import org.w3c.dom.*;
 import java.util.*;
 
@@ -44,7 +44,7 @@ public XMLStringMapReader(String rowElement) {
  * @param entryValueNames
  * @return
  */
-public List<Map<String,String>> ParseFile(String path, String[] entryValueNames){
+public List<Map<String,String>> ParseFile(String path, String[] entryValueNames) throws IOException{
     List<Map<String,String>> returner = new ArrayList();
     try {
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -76,16 +76,19 @@ public List<Map<String,String>> ParseFile(String path, String[] entryValueNames)
                 }//end of if clause
             }//end of for loop with s var
         }catch (SAXParseException err) {
-        System.out.println ("** Parsing error" + ", line "
-             + err.getLineNumber () + ", uri " + err.getSystemId ());
-        System.out.println(" " + err.getMessage ());
+            System.out.println ("** Parsing error" + ", line "
+                 + err.getLineNumber () + ", uri " + err.getSystemId ());
+            System.out.println(" " + err.getMessage ());
 
         }catch (SAXException e) {
-        Exception x = e.getException ();
-        ((x == null) ? e : x).printStackTrace ();
-
+            Exception x = e.getException ();
+            ((x == null) ? e : x).printStackTrace ();
+        }catch (IOException e) {
+            //if the path is incorrect, it throws an error and can try again with a new path.
+            System.out.println("Incorrect XML file path");
+            throw e;
         }catch (Throwable t) {
-        t.printStackTrace ();
+            t.printStackTrace ();
         }
         return returner;
     }//end of Parse File
@@ -94,7 +97,7 @@ public List<Map<String,String>> ParseFile(String path, String[] entryValueNames)
  * A main method for testing purposes.
  * @param args
  */
-    public static void main (String[] args) {
+    public static void main (String[] args) throws Exception{
         XMLStringMapReader xsmr = new XMLStringMapReader();
         String[] entyVals = {"title","url","driver","username","password","Title","Url","Driver","Username","Password", "URL"};
         List<Map<String,String>> dbVals = xsmr.ParseFile("/DB-SVG/dbs.xml", entyVals);

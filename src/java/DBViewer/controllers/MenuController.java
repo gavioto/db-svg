@@ -33,6 +33,10 @@ public class MenuController extends HttpServlet {
 
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     *
+     * creates a the main menu page for the application.  Reads the settings for the dbs.xml config file,
+     * as well as the path to the internal database.  If the initial context values are not correct, it
+     * tries the failover values.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -47,14 +51,29 @@ public class MenuController extends HttpServlet {
             String path = (String)env.lookup("DBXMLPATH");
 
             String iDAOpath = (String)env.lookup("AppDBLocation");
+
             InternalDataDAO iDAO = InternalDataDAO.getInstance(iDAOpath);
+            Connection conn = null;
+            try {
+                conn = iDAO.getConnection();
+            } catch (SQLException e) {
+                System.out.println("Attempting Second DB path.");
+                iDAOpath = (String)env.lookup("AppDBLocation2");
+                iDAO.setPath(iDAOpath);
+                conn = iDAO.getConnection();
+            }
             request.getSession().setAttribute("iDAO", iDAO);
-            Connection conn = iDAO.getConnection();
             iDAO.createTables(conn);
             conn.close();
 
-            Map<String,ConnectionWrapper> prefs = getDBPrefs(path);
-
+            Map<String,ConnectionWrapper> prefs = new HashMap();
+            try {
+                prefs = getDBPrefs(path);
+            } catch (IOException e) {
+                System.out.println("Attempting Second XML config file path.");
+                path = (String)env.lookup("DBXMLPATH2");
+                prefs = getDBPrefs(path);
+            }
             request.getSession().setAttribute("DB-Connections", prefs);
             
             // TODO output your page here
@@ -85,7 +104,8 @@ public class MenuController extends HttpServlet {
             out.println("</ul>");
             out.println("</div>");
             out.println("<div class=\"footer\">");
-            out.println("You can add more databases in the dbs.xml config file");
+            out.println("You can add more databases in the dbs.xml config file.");
+            out.println("If your database is very large, you'll probably want to set it up before you try to view it.");
             out.println("</div>");
             out.println("</body>");
             out.println("</html>");
