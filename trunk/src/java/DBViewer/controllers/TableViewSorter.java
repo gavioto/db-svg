@@ -125,13 +125,13 @@ public class TableViewSorter implements Serializable {
     //        return tableViews;
 
             int n = 0;
-            double total_kinetic_energy = 0; // running sum of total kinetic energy over all particles
+            long total_kinetic_energy = 0; // running sum of total kinetic energy over all particles
             do {
                 n++;
 //                System.out.println("Spring Iteration: "+n);
                  total_kinetic_energy = 0; // reset to 0 each round.
                  for (TableView tv1 : tableViewstoSort) {
-                     double[] net_force = {0, 0}; // running sum of total force on this particular node - (x, y)
+                     long[] net_force = {0, 0}; // running sum of total force on this particular node - (x, y)
 
                      boolean hitBoundary = false;
 
@@ -139,7 +139,7 @@ public class TableViewSorter implements Serializable {
                          if (tv1 != tv2) {
     //                         System.out.println("Dist to "+tv2.getTable().getName()+": "+tv1.calcDistanceWRadius(tv2)+" θ:"+tv1.calcAngle(tv2));
     //                         System.out.println("bf: "+calcBoundaryForce(tv1,tv2));
-                             double energy = 0;
+                             long energy = 0;
     //                         energy += calcForce(tv1,tv2);//net-force := net-force + Coulomb_repulsion( this_node, other_node )
                              energy += calcHookeForce(tv1,tv2);//net-force := net-force + Hooke_attraction( this_node, spring )
     //                         energy += calcCoulombForce(tv1,tv2);
@@ -153,8 +153,8 @@ public class TableViewSorter implements Serializable {
                              if (hitBoundary) {
                                  tv1.setVelocityX(tv1.getVelocityX() * -0.35);
                                  tv1.setVelocityY(tv1.getVelocityY() * -0.35);
-                                 net_force[0] = .5 * net_force[0];
-                                 net_force[1] = .5 * net_force[1];
+                                 net_force[0] = (long).5 * net_force[0];
+                                 net_force[1] = (long).5 * net_force[1];
                              }
                          }
                      }

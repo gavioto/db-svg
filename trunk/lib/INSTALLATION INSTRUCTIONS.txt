@@ -1,9 +1,9 @@
-|************************************************************************************************|
-|                                                                                                |
-|                              DB-SVG Installation Instructions                                  |
-|                                                                                                |
-|************************************************************************************************|
-                       Created by Derrick Bowen (derrickbowen@gmail.com)
+|**************************************************************************************|
+|                                                                                      |
+|                         DB-SVG Installation Instructions                             |
+|                                                                                      |
+|**************************************************************************************|
+                 Created by Derrick Bowen (derrickbowen@gmail.com)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,24 +18,25 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
------------------------------------------
-       *NIX Installation Instructions:
------------------------------------------
+-------------------------------------------------------------------
+       UNIX, Linux, and MacOSX Installation Instructions:
+-------------------------------------------------------------------
 1.  Copy ./dist/DB-SVG.war into your Tomcat (or similar Java Server) WebApps directory.
-2.  Create the following directory: /DB-SVG/ and allow the Tomcat user permission to read and write from it.
+2.  Create the following directory: /DB-SVG/ and allow the Tomcat User permission 
+        to read and write from it.
 3.  Edit dbs.xml to match your databases and copy it into the /DB-SVG/ folder.
 4.  Restart Tomcat
 
------------------------------------------
-       Windows Installation Instructions:
------------------------------------------
-Same as above, except create the directory at C:\DB-SVG\, and you will need to modify your 
-tomcat server context.xml settings to the following: (CATALINAHOME\conf\context.xml)
-    <WatchedResource>WEB-INF/web_windows.xml</WatchedResource>
+-------------------------------------------------------------------
+               Windows Installation Instructions:
+-------------------------------------------------------------------
+Same as above, except create the directory at C:\DB-SVG\.
+
+
     
-    Alternatively may be able to change the path in the web.xml 
-    after tomcat has unpacked the war, or you can download the source, 
-    rename web_windows.xml to web.xml and rebuild the war file.
+    Alternatively can change the path in the web.xml to whatever you
+    want by unzipping the .war file, modifying the path, and then zipping
+    it once again.
     
     
     

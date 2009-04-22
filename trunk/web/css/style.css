@@ -61,7 +61,7 @@ body,html {
     padding: 4px;
     padding-left: 10px;
     top: 55px;
-    bottom: 2em;
+    bottom: 4em;
     left: 0;
     right: 0;
     overflow: auto;
@@ -70,10 +70,11 @@ body,html {
 .footer {
     position: absolute;
     bottom: 0px;
-    height: 2em;
+    height: 4em;
     left:0px;
     right: 0px;
     padding-left:1.2em;
+    font-size:small;
 }
 
 /*  Title Styles  */
