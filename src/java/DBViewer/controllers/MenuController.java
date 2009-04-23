@@ -56,7 +56,7 @@ public class MenuController extends HttpServlet {
             Connection conn = null;
             try {
                 conn = iDAO.getConnection();
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 System.out.println("Attempting Second DB path.");
                 iDAOpath = (String)env.lookup("AppDBLocation2");
                 iDAO.setPath(iDAOpath);
