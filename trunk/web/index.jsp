@@ -1,1 +1,4 @@
-<jsp:include page="Menu" ></jsp:include>
+<%
+    String redirectURL = "Menu";
+    response.sendRedirect(redirectURL);
+%>
