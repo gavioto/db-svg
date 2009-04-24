@@ -255,3 +255,11 @@ ul {
 .svgsample { float: left; width: 46%; margin: 1%; overflow: scroll; border: 1px solid #3c8243; padding: 5px; }
 .drawOpt { float: left; width: 25%; }
 .row { clear: both; }
+#loadDialog {
+    visibility:hidden;
+    font-size:.8em !important;
+}
+#loadDialog p {
+    font-size:.8em !important;
+    color:#333 !important;
+}

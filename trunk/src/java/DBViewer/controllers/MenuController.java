@@ -83,8 +83,19 @@ public class MenuController extends HttpServlet {
                     "        <title>DB-SVG | Menu</title>" +
                     "        <link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"css/style.css\" />" +
                     "        <link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"css/jq-ui.css\" />" +
-                    "        <script type=\"text/javascript\" src=\"js/jquery.js\"></script>" +
-                    "   </head>" +
+                    "        <script type=\"text/javascript\" src=\"js/jquery.js\"></script>\n" +
+                    "        <script type=\"text/javascript\" src=\"js/jquery-ui.min.js\"></script>\n" +
+                    "        <script type=\"text/javascript\">\n" +
+                    "" +
+                    "function showLoading() {" +
+                    "        $(\"#loadDialog\").dialog({" +
+                    "			bgiframe: true," +
+                    "           modal: true," +
+                    "           height: 10" +
+                    "		});\n" +
+                    "}" +
+                    "        </script>\n" +
+                    "   </head>\n" +
                     "   <body>" +
                     "    <div class=\"titleBox\">" +
                     "       <div class=\"titleHeader\">" +
@@ -99,14 +110,16 @@ public class MenuController extends HttpServlet {
                     "<h2>Exploreable Databases:</h2>");
             out.println("<ul>");
             for (ConnectionWrapper cw : prefs.values()) {
-                out.println("<li><a href=\"model.jsp?dbi="+cw.getId()+"\" >"+cw.getTitle()+"</a>  <span class=\"menusetup\"><a href=\"setup.jsp?dbi="+cw.getId()+"\">setup</a></span></li>");
+                out.println("<li><a href=\"model.jsp?dbi="+cw.getId()+"\" onclick=\"showLoading();\" >"+cw.getTitle()+"</a>  <span class=\"menusetup\"><a href=\"setup.jsp?dbi="+cw.getId()+"\" onclick=\"showLoading();\" >setup</a></span></li>");
             }
-            out.println("</ul>");
+            out.println("</ul>" +
+                    "<div id=\"loadDialog\" class=\"loadDialog\" title=\"Loading, Please Wait...\">" +
+                    "<p>The database is being read into memory.</p>" +
+                    "</div>");
             out.println("</div>");
             out.println("<div class=\"footer\">");
             out.println("You can add more databases in the dbs.xml config file.");
             out.println("If your database is very large, you'll probably want to set it up before you try to view it.");
-            out.println("</div>");
             out.println("</body>");
             out.println("</html>");
         } catch (Exception e) {
