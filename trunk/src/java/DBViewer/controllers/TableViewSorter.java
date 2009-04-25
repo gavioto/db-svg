@@ -78,23 +78,34 @@ public class TableViewSorter implements Serializable {
      * @param tables
      * @return
      */
-    public List<TableView> SortAction(Map<String, Table> tables, boolean resort) {
+    public List<TableView> SortAction(Map<String, Table> tables, SchemaPage currentPage, boolean resort) {
         int i = 0;
         relativeAttraction = new double[tables.size()][tables.size()];
         List<TableView> tableViewswRandomValues = new ArrayList();
-        
         // arranges the tables by the table views,
-        for (Table t : tables.values()) {
-            //set inital velocities to 0
-            t.getTableView().setVelocityX(0.0);
-            //generate starting x & y coordinates
-            boolean needsSort = assignXandY(t.getTableView(), tables.size(),resort);
-            if (needsSort) tableViewswRandomValues.add(t.getTableView());
-            // initialize necessary data
-            t.getTableView().calcLinksAndRadius();
-            tableViews.add(t.getTableView());
-            t.getTableView().setId(i);
-            i++;
+        if (currentPage==null) {
+            for (Table t : tables.values()) {
+                //set inital velocities to 0
+                t.getTableView().setVelocityX(0.0);
+                //generate starting x & y coordinates
+                boolean needsSort = assignXandY(t.getTableView(), tables.size(),resort);
+                if (needsSort) tableViewswRandomValues.add(t.getTableView());
+                // initialize necessary data
+                t.getTableView().calcLinksAndRadius();
+                tableViews.add(t.getTableView());
+                t.getTableView().setId(i);
+                i++;
+            }
+        } else {
+            tableViews = currentPage.getTableViews();
+            for (TableView tv : tableViews) {
+                tv.setVelocityX(0.0);
+                boolean needsSort = assignXandY(tv, tables.size(),resort);
+                if (needsSort) tableViewswRandomValues.add(tv);// initialize necessary data
+                tv.calcLinksAndRadius();
+                tv.setId(i);
+                i++;
+            }
         }
         if (tableViewswRandomValues.size()>0 || resort) {
 
@@ -198,6 +209,12 @@ public class TableViewSorter implements Serializable {
         return tableViews;
     }
 
+    /**
+     * generates lines for the diagram.
+     *
+     * @param tableViews
+     * @return
+     */
     public List<LinkLine> calcLines(List<TableView> tableViews) {
 
         for (TableView tv : tableViews) {

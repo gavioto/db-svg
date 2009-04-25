@@ -118,8 +118,8 @@ public class MenuController extends HttpServlet {
                     "</div>");
             out.println("</div>");
             out.println("<div class=\"footer\">");
-            out.println("You can add more databases in the dbs.xml config file.");
-            out.println("If your database is very large, you'll probably want to set it up before you try to view it.");
+            out.println("You can add more databases in the dbs.xml config file.<br/>");
+            out.println("<span class=\"footlight\">*If your database is very large, you'll probably want to set it up before you try to view it.</span>");
             out.println("</body>");
             out.println("</html>");
         } catch (Exception e) {

@@ -5,6 +5,9 @@ import DBViewer.objects.model.*;
 import java.util.*;
 import java.io.Serializable;
 /**
+ * A view object for Tables.  Holds a table, its coordinates, references, and 
+ * velocity(used during sorting) in the schema.
+ *
  *
  * @author horizon
  */
@@ -20,6 +23,7 @@ public class TableView implements Comparable<TableView>, Serializable{
     List<TableView> referencesTo = new ArrayList();
     List<TableView> referencedBy = new ArrayList();
     List<TableView> ref = null;
+    SchemaPage page;
     int id = 0;
     boolean dirty = true;
 
@@ -29,7 +33,8 @@ public class TableView implements Comparable<TableView>, Serializable{
     }
 
     /**
-     * goes through the foreign keys, populates the list of TableViews this
+     * goes through the foreign keys, populates the list of TableViews to get
+     * all references and the radius of the table.
      */
     public void calcLinksAndRadius() {
         this.numLinks = 0;
@@ -52,6 +57,12 @@ public class TableView implements Comparable<TableView>, Serializable{
         this.radius = (11.0/20.0) * diagonal;
     }
 
+    /**
+     * calculates the distance between this TableView and another.
+     * 
+     * @param o
+     * @return
+     */
     public double calcDistance(TableView o) {
         double distance = 0.0;
         double x1 = this.getX();
@@ -64,6 +75,13 @@ public class TableView implements Comparable<TableView>, Serializable{
         return distance;
     }
 
+    /**
+     * Calculates the distance between this tableView and a set of coordinates
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
      public double calcDistance(int x, int y) {
         double distance = 0.0;
         double x1 = this.getX();
@@ -74,6 +92,13 @@ public class TableView implements Comparable<TableView>, Serializable{
         return distance;
     }
 
+    /**
+     * calculates the distance between this TableView and another.  Takes the
+     * radius of each table into account
+     * 
+     * @param o
+     * @return
+     */
     public double calcDistanceWRadius(TableView o) {
         double distance = 0.0;
         double x1 = this.getX();
@@ -88,6 +113,12 @@ public class TableView implements Comparable<TableView>, Serializable{
         return distance;
     }
 
+    /**
+     * Calculates the angle between this TableView and another.
+     *
+     * @param o
+     * @return
+     */
     public double calcAngle(TableView o) {
         double angle = 0.0;
 
@@ -100,6 +131,13 @@ public class TableView implements Comparable<TableView>, Serializable{
         return angle;
     }
 
+    /**
+     * Calculates the angle between this TableView and a set of coordinates.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
     public double calcAngle(int x, int y) {
         double angle = 0.0;
 
@@ -208,6 +246,14 @@ public class TableView implements Comparable<TableView>, Serializable{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public SchemaPage getPage() {
+        return page;
+    }
+
+    public void setPage(SchemaPage page) {
+        this.page = page;
     }
 
     public boolean isDirty() {

@@ -2,6 +2,7 @@
 package DBViewer.models;
 
 import java.sql.*;
+import java.util.*;
 import DBViewer.objects.view.*;
 import java.io.Serializable;
 /**
@@ -36,7 +37,13 @@ public class InternalDataDAO implements Serializable{
       }
       return instance;
    }
-
+   
+/**
+ * Generates a connection from the internal DB based on the initialized path.
+ *
+ * @return
+ * @throws java.sql.SQLException
+ */
       public Connection getConnection() throws SQLException {
        try {
         Class.forName(driver);
@@ -51,6 +58,10 @@ public class InternalDataDAO implements Serializable{
        return null;
     }
 
+/**
+ * Makes sure that all the correct tables have been created in the internal db
+ * @param conn
+ */
       public void createTables(Connection conn){
           try {
               Statement st = conn.createStatement();
@@ -69,25 +80,42 @@ public class InternalDataDAO implements Serializable{
               e.printStackTrace();
           } 
       }
-
+      
+/**
+ * Inserts a tableView and its positions into the internal DB
+ * @param t
+ * @param conn
+ */
       public void insertTable(TableView t, Connection conn) {
           verifySchema(t.getTable().getSchemaName(), conn);
-          String insertSQL = "INSERT OR REPLACE INTO table_position VALUES (?,?,?,?);";
+          String insertTableSQL = "INSERT OR REPLACE INTO table_position VALUES (?,?,?,?);";
+          String schemaPageTableSQL = "INSERT OR REPLACE INTO schema_page_table VALUES (?,?,?);";
           try {
-              PreparedStatement ps = conn.prepareStatement(insertSQL);
-
+              PreparedStatement ps = conn.prepareStatement(insertTableSQL);
               ps.setString(1, t.getTable().getName());
               ps.setString(2, t.getTable().getSchemaName());
               ps.setDouble(3, t.getX());
               ps.setDouble(4, t.getY());
-
               ps.executeUpdate();
+
+              if (t.getPage()!=null){
+                  ps = conn.prepareStatement(schemaPageTableSQL);
+                  ps.setString(1, t.getTable().getName());
+                  ps.setString(2, t.getTable().getSchemaName());
+                  ps.setInt(3,t.getPage().getId());
+                  ps.executeUpdate();
+              }
 
           } catch (Exception e) {
               e.printStackTrace();
           }
       }
 
+      /**
+       * Makes sure that the schema is in the internal db.
+       * @param schema
+       * @param conn
+       */
       public void verifySchema(String schema,Connection conn) {
 
           String insertSQL = "INSERT OR REPLACE INTO schema VALUES (?);";
@@ -103,6 +131,13 @@ public class InternalDataDAO implements Serializable{
           }
       }
 
+      /**
+       * Checks to see if there are coordinates for the current table in the
+       * internal DB. If not, it returns false.
+       * @param tv
+       * @param conn
+       * @return coordsFound
+       */
       public boolean setCoordinates(TableView tv, Connection conn) {
           boolean coordsFound = false;
           String insertSQL = "SELECT * FROM table_position WHERE schema = ? AND name = ? LIMIT 1;";
@@ -127,6 +162,81 @@ public class InternalDataDAO implements Serializable{
           return coordsFound;
       }
 
+      /**
+       * Returns a collection of Schema Pages from the internal DB.
+       * 
+       * @param schemaName
+       * @param conn
+       * @return
+       */
+      public Map<Integer,SchemaPage> readSchemaPages(String schemaName, Connection conn) {
+          String insertSQL = "SELECT * FROM schema_page_table spt, page p WHERE p.id=spt.pageid AND schema = ? ORDER BY p.orderid ASC;";
+          Map<Integer,SchemaPage> pages = new HashMap();
+          try {
+              PreparedStatement ps = conn.prepareStatement(insertSQL);
+
+              ps.setString(1, schemaName);
+
+              ResultSet rs = ps.executeQuery();
+
+              while (rs.next()) {
+                  SchemaPage p = new SchemaPage();
+                  p.setId(rs.getInt("id"));
+                  pages.put(p.getId(),p);
+                  p.setOrderid(rs.getInt("orderid"));
+                  p.setTitle(rs.getString("title"));
+              }
+              rs.close();
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+          return pages;
+      }
+
+      /**
+       * Checks to see if the Table is assigned to a page, and if so connects them
+       * in memory.
+       *
+       * @param tv
+       * @param pages
+       * @param conn
+       */
+      public void readTablePage(TableView tv, Map<Integer,SchemaPage> pages, Connection conn) {
+          String SQL = "SELECT DISTINCT p.id FROM schema_page_table spt, page p WHERE p.id=spt.pageid AND tablename = ? and schema =?;";
+          try {
+              PreparedStatement ps = conn.prepareStatement(SQL);
+
+              ps.setString(1, tv.getTable().getName());
+              ps.setString(2, tv.getTable().getSchemaName());
+
+              ResultSet rs = ps.executeQuery();
+              int i =0;
+              while (rs.next()) {
+                  Integer pageid = rs.getInt("id");
+                  SchemaPage p = pages.get(pageid);
+                  // if the table is on more than one page, we need to create a new TableView for the page.
+                  if (i>0) {
+                      TableView tvNew = new TableView(tv.getTable());
+                      tvNew.setPage(p);
+                      p.getTableViews().add(tvNew);
+                  } else {
+                      tv.setPage(p);
+                      p.getTableViews().add(tv);
+                  }
+                  i++;
+              }
+              rs.close();
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+      }
+
+  /**
+   * test method, creates a SQLite DB with the proper tables.
+   * 
+   * @param args
+   * @throws java.lang.Exception
+   */
     public static void main(String[] args) throws Exception {
         InternalDataDAO iDAO =  InternalDataDAO.getInstance("/DB-SVG/DB-SVG-2.db");
         Connection conn = iDAO.getConnection();
