@@ -8,8 +8,11 @@ import DBViewer.objects.model.*;
 import DBViewer.models.*;
 import DBViewer.controllers.*;
 import java.io.Serializable;
+
 /**
- *
+ * A View object that represents all of the tables in a schema (possibly
+ * divided into multiple pages) and the lines connecting them.
+ * 
  * @author horizon
  */
 public class SortedSchema implements Serializable{
@@ -19,6 +22,7 @@ public class SortedSchema implements Serializable{
     int transx = 0;
     int transy = 0;
     List<TableView> tableViews = new ArrayList();
+    Map<Integer,SchemaPage> pages = new LinkedHashMap();
     List<LinkLine> lines = new ArrayList();
     Map<String, Table> tables = new HashMap<String, Table>();
     MainDAO dao = MainDAO.getInstance();
@@ -69,8 +73,10 @@ public class SortedSchema implements Serializable{
               try {
                  Connection conn = cwmap.get(dbi).getConnection();
                  tables = dao.getTables(conn,cwmap.get(dbi).getTitle());
+                 this.setName(cwmap.get(dbi).getTitle());
                  session.setAttribute("CurrentDBI",dbi);
                  newTables = true;
+                 readSchemaPages();
               } catch (Exception e) {
                  e.printStackTrace();
              }
@@ -78,16 +84,18 @@ public class SortedSchema implements Serializable{
        }
         return newTables;
     }
-
+    
+    /**
+     * Checks to see if the Tables need to be sorted, and runs the sort if so.
+     * Also generates the lines between tables
+     *
+     * @param isNewTables
+     */
     private void prepareTableViews(boolean isNewTables) {
         if (!tablesSorted || isNewTables) {
-            tableViews = tvSorter.SortAction(tables,false);
+            tableViews = tvSorter.SortAction(tables,null,false);
             tablesSorted = true;
             lines = tvSorter.calcLines(tableViews);
-
-            if (tableViews.size()>0) {
-                this.setName(tableViews.get(0).getTable().getSchemaName());
-            }
         } else {
             List<TableView> tablesToClean = new ArrayList();
             for (LinkLine li : lines) {
@@ -99,9 +107,26 @@ public class SortedSchema implements Serializable{
         }
     }
 
-/**
- * Calculates the schema height width and translation values based on the tableviews
- */
+    /**
+     * Reads in the pages of the Schema and assigns the tables to
+     * their pages.
+     *
+     * @throws java.lang.Exception
+     */
+    private void readSchemaPages() throws Exception{
+        if (tables.size()>0) {
+             Connection conn = iDAO.getConnection();
+             pages = iDAO.readSchemaPages(name, conn);
+             for (Table t: tables.values()){
+                 iDAO.readTablePage(t.getTableView(), pages, conn);
+             }
+             conn.close();
+         }
+    }
+
+    /**
+     * Calculates the schema height width and translation values based on the tableviews
+     */
     private void calcDimensions() {
         double minx = 2000;
         double miny = 2000;
@@ -135,9 +160,12 @@ public class SortedSchema implements Serializable{
         conn.close();
     }
 
-
-    public void resortTableViews(boolean resort) {
-        tableViews = tvSorter.SortAction(tables,resort);
+/**
+ * public access method
+ * @param resort
+ */
+    public void resortTableViews(boolean resort,SchemaPage currentPage) {
+        tableViews = tvSorter.SortAction(tables,currentPage,resort);
         tablesSorted = true;
         lines = tvSorter.calcLines(tableViews);
         calcDimensions();
@@ -229,6 +257,14 @@ public class SortedSchema implements Serializable{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Map<Integer, SchemaPage> getPages() {
+        return pages;
+    }
+
+    public void setPages(Map<Integer, SchemaPage> pages) {
+        this.pages = pages;
     }
 
     

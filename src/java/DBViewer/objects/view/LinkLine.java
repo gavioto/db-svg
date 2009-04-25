@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
+ * A View Object representing a line between two tables in the diagram
  *
  * @author horizon
  */
@@ -34,6 +35,12 @@ public class LinkLine implements Serializable{
         calculateLine(t, fk);
     }
 
+    /**
+     * a private method for calculating the endpoints and arrow of a line.
+     *
+     * @param t
+     * @param fk
+     */
     private void calculateLine (Table t, ForeignKey fk) {
         this.startingTable=t;
         this.foreignkey=fk;
@@ -64,6 +71,11 @@ public class LinkLine implements Serializable{
         this.ya3 = ya1 + (rtl ? -1 : 1) * (arrowLength * Math.sin(angle - arrowAngle));
     }
 
+    /**
+     * recalculate the endpoints and arrow of a line.
+     * 
+     * @return
+     */
     public List<TableView> recalculateLine(){
         List<TableView> returner = new ArrayList();
         if (this.startingTable.getTableView().isDirty() || this.foreignkey.getReference().getTable().getTableView().isDirty()) {
@@ -185,7 +197,6 @@ public class LinkLine implements Serializable{
     public void setYa3(double ya3) {
         this.ya3 = ya3;
     }
-
 
     public double getEndRadius() {
         return this.foreignkey.getReference().getTable().getTableView().getRadius();

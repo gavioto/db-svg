@@ -60,7 +60,7 @@ public class Tester {
 
       InternalDataDAO iDAO = InternalDataDAO.getInstance("/DB-SVG/DB-SVG.db");
       TableViewSorter tvSorter = new TableViewSorter(iDAO);
-      List<TableView> tableViews = tvSorter.SortAction(tables,false);
+      List<TableView> tableViews = tvSorter.SortAction(tables,null,false);
       List<LinkLine> lines = tvSorter.calcLines(tableViews);
       for (LinkLine l : lines) {
           System.out.println(l.getStartingTable().getName()+"->"+l.getForeignkey().getReferencedTable() + ":   "+l.getX1() + ","+l.getY1() + " -> "+l.getX2() + ","+l.getY2() +"  a:"+l.getAngle());
