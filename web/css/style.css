@@ -77,6 +77,10 @@ body,html {
     font-size:small;
 }
 
+.footlight {
+    color:#666;
+}
+
 /*  Title Styles  */
 .titleLeft {
     float:left;
@@ -262,4 +266,17 @@ ul {
 #loadDialog p {
     font-size:.8em !important;
     color:#333 !important;
+}
+.info {
+    margin:5px;
+    padding-left:10px;
+    color:#222;
+    font-size:small;
+}
+.info .data {
+    color:#555;
+}
+.info .label {
+    font-weight:bold;
+    width:7em;
 }

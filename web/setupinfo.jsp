@@ -13,9 +13,26 @@
     } else {
         currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
     }
-    out.println("<h3 class=\"ui-widget-header ui-corner-all\">Schema Information: "+currentSchema.getName()+"</h3>");
-    out.println("Pages: <br /><br />");
-    out.println("<h3 class=\"ui-widget-header ui-corner-all\">Text Version </h3>");
+    currentSchema.prepareSchema(request.getSession(), dbi);
+%>
+<h3 class="ui-widget-header ui-corner-all">Schema Information: <%= currentSchema.getName() %></h3>
+<table class="info">
+    <tr>
+        <td class="label">Pages: </td><td class="data"><%= currentSchema.getPages().size() %></td>
+    </tr>
+    <tr>
+        <td class="label">Tables: </td><td class="data"><%= currentSchema.getTableViews().size() %></td>
+    </tr>
+    <tr>
+        <td class="label">Height: </td><td class="data"><%= currentSchema.getHeight() %></td>
+    </tr>
+    <tr>
+        <td class="label">Width: </td><td class="data"><%= currentSchema.getWidth() %></td>
+    </tr>
+</table>
+    <br />
+    <h3 class="ui-widget-header ui-corner-all">Text Version </h3>
+<%
       for (TableView tv : currentSchema.getTableViews()) {
               Table t = tv.getTable();
              out.println("<h4 >"+t.getName()+"</h4><ul>");
