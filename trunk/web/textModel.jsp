@@ -2,6 +2,9 @@
     Document   : PopulateDB
     Created on : Mar 28, 2009, 4:37:08 PM
     Author     : horizon
+
+DEPRECATED - Now on setup page through setupinfo.
+Shows a text representation of the database.
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
