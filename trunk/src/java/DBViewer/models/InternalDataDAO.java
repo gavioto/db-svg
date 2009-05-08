@@ -4,6 +4,7 @@ package DBViewer.models;
 import java.sql.*;
 import java.util.*;
 import DBViewer.objects.view.*;
+import DBViewer.objects.model.*;
 import java.io.Serializable;
 /**
  * A very basic DAO for storing information about table positions in an SQLite database
@@ -65,15 +66,15 @@ public class InternalDataDAO implements Serializable{
       public void createTables(Connection conn){
           try {
               Statement st = conn.createStatement();
-              st.executeUpdate("CREATE TABLE IF NOT EXISTS schema (title PRIMARY KEY); ");
-              st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_position (name, schema, x_pos FLOAT, y_pos FLOAT," +
+              st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema (title PRIMARY KEY); ");
+              st.executeUpdate(" CREATE TABLE IF NOT EXISTS table (id INTEGER PRIMARY KEY, name, schema," +
                       " UNIQUE (name, schema), " +
                       " FOREIGN KEY (schema) REFERENCES schema(title));");
               st.executeUpdate(" CREATE TABLE IF NOT EXISTS page (id INTEGER PRIMARY KEY, orderid INTEGER, title ); ");
-              st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema_page_table (pageid INTEGER, tablename, schema," +
+              st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_page_position (pageid INTEGER, tableid, x_pos FLOAT, y_pos FLOAT," +
                       " UNIQUE (pageid, tablename, schema), " +
                       " FOREIGN KEY (pageid) REFERENCES page(id), " +
-                      " FOREIGN KEY (tablename) REFERENCES table_position(name), " +
+                      " FOREIGN KEY (tableid) REFERENCES table(id), " +
                       " FOREIGN KEY (schema) REFERENCES schema(title) " +
                       "); ");
           } catch (Exception e) {
@@ -86,26 +87,28 @@ public class InternalDataDAO implements Serializable{
  * @param t
  * @param conn
  */
-      public void insertTable(TableView t, Connection conn) {
-          verifySchema(t.getTable().getSchemaName(), conn);
-          String insertTableSQL = "INSERT OR REPLACE INTO table_position VALUES (?,?,?,?);";
-          String schemaPageTableSQL = "INSERT OR REPLACE INTO schema_page_table VALUES (?,?,?);";
+      public void insertTable(Table t, Connection conn) {
+          verifySchema(t.getSchemaName(), conn);
+          String insertTableSQL = "INSERT OR REPLACE INTO table (id,name,schema) VALUES (?,?,?);";
+          String schemaPageTableSQL = "INSERT OR REPLACE INTO table_page_position (pageid,tableid,x_pos,y_pos) VALUES (?,?,?,?);";
           try {
               PreparedStatement ps = conn.prepareStatement(insertTableSQL);
-              ps.setString(1, t.getTable().getName());
-              ps.setString(2, t.getTable().getSchemaName());
-              ps.setDouble(3, t.getX());
-              ps.setDouble(4, t.getY());
+              ps.setInt(1, t.getId());
+              ps.setString(2, t.getName());
+              ps.setString(3, t.getSchemaName());
               ps.executeUpdate();
 
-              if (t.getPage()!=null){
+              if (t.getTablePageViews().size()>0){
                   ps = conn.prepareStatement(schemaPageTableSQL);
-                  ps.setString(1, t.getTable().getName());
-                  ps.setString(2, t.getTable().getSchemaName());
-                  ps.setInt(3,t.getPage().getId());
-                  ps.executeUpdate();
+                  for (TableView tv :t.getTablePageViews().values()){
+                      ps.setInt(1, tv.getTable().getId());
+                      ps.setInt(2, tv.getPage().getId());
+                      ps.setDouble(3, tv.getX());
+                      ps.setDouble(4, tv.getY());
+                      ps.executeUpdate();
+                  }
               }
-
+              ps.close();
           } catch (Exception e) {
               e.printStackTrace();
           }

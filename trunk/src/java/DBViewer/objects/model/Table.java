@@ -10,44 +10,43 @@ import java.io.Serializable;
  */
 public class Table  implements Serializable{
 
+   int id = 0;
    String name = "";
    String schemaName = "";
    Map<String, Column> columns = new LinkedHashMap();
    Map<String, ForeignKey> foreignKeys = new LinkedHashMap();
    Map<String, Table> referencingTables = new LinkedHashMap();
    Map<String, PrimaryKey> primaryKeys = new LinkedHashMap();
+   Map<Integer, TableView> tablePageViews = new LinkedHashMap();
    int width = 0;
    int height = 0;
-   TableView tableView;
+   TableView defaultTableView;
+
 
    /**
     * 
     */
    public Table() {
-       tableView = new TableView(this);
+       defaultTableView = new TableView(this);
    }
 
-   /**
-    * 
-    * @param name
-    */
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
    public Table(String name) {
       this.name = name;
-       tableView = new TableView(this);
+       defaultTableView = new TableView(this);
    }
 
-   /**
-    * 
-    * @return
-    */
    public String getName() {
       return name;
    }
 
-   /**
-    * 
-    * @param name
-    */
    public void setName(String name) {
       this.name = name;
    }
@@ -113,12 +112,43 @@ public class Table  implements Serializable{
         return width;
     }
 
-    public TableView getTableView() {
-        return tableView;
+    public TableView getDefaultTableView() {
+        return defaultTableView;
     }
 
-    public void setTableView(TableView tableView) {
-        this.tableView = tableView;
+    public void setDefaultTableView(TableView tableView) {
+        this.defaultTableView = tableView;
+    }
+
+    public Map<Integer, TableView> getTablePageViews() {
+        return tablePageViews;
+    }
+
+    /**
+     * I don't think we really want the TableViews to be totally reset.
+     *
+     * @param tablePageViews
+     */
+    private void setTablePageViews(Map<Integer, TableView> tableViews) {
+        this.tablePageViews = tableViews;
+    }
+
+    /**
+     * Convenience method, Adds a TableView for the Given Page id.
+     * @param tv
+     * @param pageId
+     */
+    public void addTableViewForPage(TableView tv, int pageId){
+        tablePageViews.put(pageId, tv);
+    }
+
+    /**
+     * Convenience method, Adds a TableView for the Given Page.
+     * @param tv
+     * @param pageId
+     */
+    public void addTableViewForPage(TableView tv, SchemaPage page){
+        addTableViewForPage(tv, page.getId());
     }
 
     public int getHeight() {

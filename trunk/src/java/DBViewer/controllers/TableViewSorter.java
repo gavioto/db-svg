@@ -86,14 +86,14 @@ public class TableViewSorter implements Serializable {
         if (currentPage==null) {
             for (Table t : tables.values()) {
                 //set inital velocities to 0
-                t.getTableView().setVelocityX(0.0);
+                t.getDefaultTableView().setVelocityX(0.0);
                 //generate starting x & y coordinates
-                boolean needsSort = assignXandY(t.getTableView(), tables.size(),resort);
-                if (needsSort) tableViewswRandomValues.add(t.getTableView());
+                boolean needsSort = assignXandY(t.getDefaultTableView(), tables.size(),resort);
+                if (needsSort) tableViewswRandomValues.add(t.getDefaultTableView());
                 // initialize necessary data
-                t.getTableView().calcLinksAndRadius();
-                tableViews.add(t.getTableView());
-                t.getTableView().setId(i);
+                t.getDefaultTableView().calcLinksAndRadius();
+                tableViews.add(t.getDefaultTableView());
+                t.getDefaultTableView().setId(i);
                 i++;
             }
         } else {
