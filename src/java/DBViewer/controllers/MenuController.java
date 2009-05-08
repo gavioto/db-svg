@@ -25,11 +25,11 @@ import java.sql.*;
  */
 public class MenuController extends HttpServlet {
 
-    private static String[] PossibleColumns = {"title","url","driver","username","password","pages",
-                                               "Title","Url","Driver","Username","Password","Pages",
-                                               "TITLE","URL","DRIVER","USERNAME","PASSWORD","PAGES"};
+    private static String[] PossibleColumns = {"title","url","driver","username","password",
+                                               "Title","Url","Driver","Username","Password",
+                                               "TITLE","URL","DRIVER","USERNAME","PASSWORD",};
 
-    private static String[] ParameterColumns = {"title","url","driver","username","password","pages"};
+    private static String[] ParameterColumns = {"title","url","driver","username","password"};
 
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.

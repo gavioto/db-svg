@@ -31,6 +31,11 @@ public class TableView implements Comparable<TableView>, Serializable{
     public TableView(Table t){
         table = t;
     }
+    
+    public TableView(Table t, SchemaPage p){
+        table = t;
+        page = p;
+    }
 
     /**
      * goes through the foreign keys, populates the list of TableViews to get
@@ -41,11 +46,11 @@ public class TableView implements Comparable<TableView>, Serializable{
         Map<String,ForeignKey> fkeys = this.table.getForeignKeys();
         Map<String,Table> referencers = this.table.getReferencingTables();
         for (ForeignKey fk : fkeys.values()) {
-            this.getReferencesTo().add(fk.getReference().getTable().getTableView());
+            this.getReferencesTo().add(fk.getReference().getTable().getDefaultTableView());
             this.numLinks++;
         }
         for (Table t : referencers.values()) {
-            this.getReferencedBy().add(t.getTableView());
+            this.getReferencedBy().add(t.getDefaultTableView());
             this.numLinks++;
         }
 

@@ -118,7 +118,7 @@ public class SortedSchema implements Serializable{
              Connection conn = iDAO.getConnection();
              pages = iDAO.readSchemaPages(name, conn);
              for (Table t: tables.values()){
-                 iDAO.readTablePage(t.getTableView(), pages, conn);
+                 iDAO.readTablePage(t.getDefaultTableView(), pages, conn);
              }
              conn.close();
          }

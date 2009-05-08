@@ -46,10 +46,10 @@ public class LinkLine implements Serializable{
         this.foreignkey=fk;
 
         // line main end points
-        this.x1 = t.getTableView().getX()+t.getWidth()/2;
-        this.y1 = t.getTableView().getY()+t.getHeight()/2;
-        this.x2 = fk.getReference().getTable().getTableView().getX()+fk.getReference().getTable().getWidth()/2;
-        this.y2 = fk.getReference().getTable().getTableView().getY()+fk.getReference().getTable().getHeight()/2;
+        this.x1 = t.getDefaultTableView().getX()+t.getWidth()/2;
+        this.y1 = t.getDefaultTableView().getY()+t.getHeight()/2;
+        this.x2 = fk.getReference().getTable().getDefaultTableView().getX()+fk.getReference().getTable().getWidth()/2;
+        this.y2 = fk.getReference().getTable().getDefaultTableView().getY()+fk.getReference().getTable().getHeight()/2;
 
         if ((x1-x2)!=0) {
             this.angle = Math.atan((y1-y2)/(x1-x2));
@@ -78,10 +78,10 @@ public class LinkLine implements Serializable{
      */
     public List<TableView> recalculateLine(){
         List<TableView> returner = new ArrayList();
-        if (this.startingTable.getTableView().isDirty() || this.foreignkey.getReference().getTable().getTableView().isDirty()) {
+        if (this.startingTable.getDefaultTableView().isDirty() || this.foreignkey.getReference().getTable().getDefaultTableView().isDirty()) {
             calculateLine(this.startingTable, this.foreignkey);
-            returner.add(this.startingTable.getTableView());
-            returner.add(this.foreignkey.getReference().getTable().getTableView());
+            returner.add(this.startingTable.getDefaultTableView());
+            returner.add(this.foreignkey.getReference().getTable().getDefaultTableView());
         }
         return returner;
     }
@@ -199,7 +199,7 @@ public class LinkLine implements Serializable{
     }
 
     public double getEndRadius() {
-        return this.foreignkey.getReference().getTable().getTableView().getRadius();
+        return this.foreignkey.getReference().getTable().getDefaultTableView().getRadius();
     }
 
 }

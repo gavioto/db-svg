@@ -17,6 +17,9 @@ public class SchemaPage {
     int transx = 0;
     int transy = 0;
 
+    public SchemaPage(int id){
+        this.id = id;
+    }
     /**
      * Calculates the schema height width and translation values based on the tableviews
      */
