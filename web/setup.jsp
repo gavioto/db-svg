@@ -27,7 +27,7 @@
     $(function() {
 
         $('#info').click(function(){
-           $.post("setupinfo.jsp", { "dbi": dbi },
+           $.post("setupInfo.jsp", { "dbi": dbi },
            function(data){
                $('#changer').html(data);
            });
@@ -35,10 +35,10 @@
       });
 
       $('#pages').click(function(){
- //          $.post("ajaxFunctions.jsp", { "refresh": "true" },
- //          function(data){
-               $('#changer').html('pages data');
- //          });
+           $.post("setupPages.jsp", { "refresh": "true" },
+           function(data){
+               $('#changer').html(data);
+           });
            return false;
       });
     });
@@ -60,7 +60,7 @@
     </div>
     <div id="content" class="contentBox">
       <div id="changer">
-          <jsp:include page="setupinfo.jsp"></jsp:include>
+          <jsp:include page="setupInfo.jsp"></jsp:include>
       </div>
     </div>
     </body>

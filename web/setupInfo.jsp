@@ -8,6 +8,9 @@
 
     String dbi = request.getParameter("dbi");
     String pageid = request.getParameter("page");
+    if (pageid==null) {
+        pageid = (String)request.getSession().getAttribute("pageid");
+    }
 
     SortedSchema currentSchema = new SortedSchema();
     if (request.getSession().getAttribute("CurrentSchema")==null || request.getSession().getAttribute("CurrentSchema").getClass()!=currentSchema.getClass()) {
@@ -32,7 +35,11 @@
     <br />
     <h3 class="ui-widget-header ui-corner-all">Text Version </h3>
 <%
-      for (Table t : currentSchema.getTables().values()) {
+
+List<Table> tables = new ArrayList();
+tables.addAll(currentSchema.getTables().values());
+Collections.sort(tables);
+      for (Table t : tables) {
              out.println("<h4 >"+t.getName()+"</h4><ul>");
              Map<String,Column> cols = t.getColumns();
              for (Column c : cols.values()) {
