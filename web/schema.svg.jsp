@@ -8,9 +8,11 @@
 <%@page import="DBViewer.objects.model.*" %>
 <%@page import="DBViewer.objects.view.*" %>
 <%@page import="DBViewer.controllers.*" %>
+<%@page import="DBViewer.controllers.*" %>
 <%@page import="java.util.*" %>
 <%
 String dbi = (String)request.getSession().getAttribute("CurrentDBI");
+String pageid = (String)request.getSession().getAttribute("pageid");
 
 if (dbi!=null) {
 
@@ -20,9 +22,10 @@ if (dbi!=null) {
     } else {
         currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
     }
-    currentSchema.prepareSchema(session, dbi);
+    SchemaController sc = SchemaController.getInstance();
+    SchemaPage sPage = sc.prepareSchema(currentSchema,request.getSession(), dbi, pageid);
 
-    List<TableView> tableViews = currentSchema.getTableViews();
+    List<TableView> tableViews = sPage.getTableViews();
     
 %>
 <svg
@@ -34,9 +37,9 @@ if (dbi!=null) {
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   width="<%= currentSchema.getWidth() %>"
-   height="<%= currentSchema.getHeight() %>"
-   transform="translate(<%= currentSchema.getTransx() %>,<%= currentSchema.getTransy() %>)"
+   width="<%= sPage.getWidth() %>"
+   height="<%= sPage.getHeight() %>"
+   transform="translate(<%= sPage.getTransx() %>,<%= sPage.getTransy() %>)"
    id="canvas"
    sodipodi:version="0.32"
    inkscape:version="0.46"
@@ -46,7 +49,7 @@ if (dbi!=null) {
 <svg:g id="DataModel"
    transform="translate(<%= currentSchema.getTransx() %>,<%= currentSchema.getTransy() %>)">
 <%
-List<LinkLine> lines = currentSchema.getLines();
+List<LinkLine> lines = sPage.getLines();
             for (LinkLine l : lines) {
                 request.getSession().setAttribute("CurrentLine",l);
 
@@ -57,7 +60,7 @@ List<LinkLine> lines = currentSchema.getLines();
 
             for (TableView t : tableViews) {
                 
-                request.getSession().setAttribute("CurrentTable",t.getTable());
+                request.getSession().setAttribute("CurrentTableView",t);
                 
                 %>
                 <jsp:include page="table.jsp" >
