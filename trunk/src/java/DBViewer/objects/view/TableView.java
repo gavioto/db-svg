@@ -38,20 +38,24 @@ public class TableView implements Comparable<TableView>, Serializable{
     }
 
     /**
-     * goes through the foreign keys, populates the list of TableViews to get
-     * all references and the radius of the table.
+     * goes through the foreign keys, populates the list of TableViews  to get
+     * all references for the current page and the radius of the table.
      */
     public void calcLinksAndRadius() {
         this.numLinks = 0;
         Map<String,ForeignKey> fkeys = this.table.getForeignKeys();
         Map<String,Table> referencers = this.table.getReferencingTables();
         for (ForeignKey fk : fkeys.values()) {
-            this.getReferencesTo().add(fk.getReference().getTable().getDefaultTableView());
-            this.numLinks++;
+            if (fk.getReference().getTable().getTablePageViews().get(this.page.getId())!=null) {
+                this.getReferencesTo().add(fk.getReference().getTable().getTablePageViews().get(this.page.getId()));
+                this.numLinks++;
+            }
         }
         for (Table t : referencers.values()) {
-            this.getReferencedBy().add(t.getDefaultTableView());
-            this.numLinks++;
+            if (t.getTablePageViews().get(this.page.getId())!=null) {
+                this.getReferencesTo().add(t.getTablePageViews().get(this.page.getId()));
+                this.numLinks++;
+            }
         }
 
         int height = this.getTable().getHeight();
