@@ -44,6 +44,9 @@ Shows a text representation of the database.
 
     String dbi = request.getParameter("dbi");
     String pageid = request.getParameter("page");
+    if (pageid==null) {
+        pageid = (String)request.getSession().getAttribute("pageid");
+    }
 
     SortedSchema currentSchema = new SortedSchema();
     if (request.getSession().getAttribute("CurrentSchema")==null || request.getSession().getAttribute("CurrentSchema").getClass()!=currentSchema.getClass()) {
