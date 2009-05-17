@@ -5,7 +5,6 @@ import java.util.*;
 import DBViewer.objects.view.*;
 import DBViewer.objects.model.*;
 import DBViewer.models.*;
-import java.sql.*;
 import java.io.Serializable;
 
 /**
@@ -66,42 +65,63 @@ public class TableViewSorter implements Serializable {
     private static int CENTER_X = 550;
     private static int CENTER_Y = 100;
 
-    public TableViewSorter(InternalDataDAO iDAO) {
+    ///////////////////  Singletoning it  ///////////////////
+   private static TableViewSorter instance = null;
+
+   /**
+    * private constructor
+    */
+   private TableViewSorter(InternalDataDAO iDAO) {
         this.iDAO = iDAO;
     }
 
-    public TableViewSorter() {
-        this.iDAO = InternalDataDAO.getInstance("/test.db");
+   /**
+    * private constructor
+    */
+   private TableViewSorter() {
+       this.iDAO = iDAO.getInstance("/test.db");
     }
+
+   /**
+    * returns an instance of the Controller.
+    * @return
+    */
+   public static TableViewSorter getInstance(InternalDataDAO iDAO) {
+      if (instance == null) {
+         instance = new TableViewSorter(iDAO);
+      } else {
+          instance.setIDAO(iDAO);
+      }
+      return instance;
+   }
+
+    /**
+    * returns an instance of the Controller.
+    * @return
+    */
+   public static TableViewSorter getInstance() {
+      if (instance == null) {
+         instance = new TableViewSorter();
+      } 
+      return instance;
+   }
+
     /**
      * Main action method, gets everything set up and runs the Force-Based sorting algorithm
      * @param tables
      * @return
      */
-    public List<TableView> SortAction(Map<String, Table> tables, SchemaPage currentPage, boolean resort) {
+    public List<TableView> SortAction(SchemaPage currentPage, boolean resort) {
         int i = 0;
-        relativeAttraction = new double[tables.size()][tables.size()];
+        relativeAttraction = new double[currentPage.getTableViews().size()][currentPage.getTableViews().size()];
         List<TableView> tableViewswRandomValues = new ArrayList();
         // arranges the tables by the table views,
         if (currentPage==null) {
-            for (Table t : tables.values()) {
-                //set inital velocities to 0
-                t.getDefaultTableView().setVelocityX(0.0);
-                //generate starting x & y coordinates
-                boolean needsSort = assignXandY(t.getDefaultTableView(), tables.size(),resort);
-                if (needsSort) tableViewswRandomValues.add(t.getDefaultTableView());
-                // initialize necessary data
-                t.getDefaultTableView().calcLinksAndRadius();
-                tableViews.add(t.getDefaultTableView());
-                t.getDefaultTableView().setId(i);
-                i++;
-            }
-        } else {
             tableViews = currentPage.getTableViews();
             for (TableView tv : tableViews) {
+                if (resort) randomPositions(tv, currentPage.getTableViews().size());
                 tv.setVelocityX(0.0);
-                boolean needsSort = assignXandY(tv, tables.size(),resort);
-                if (needsSort) tableViewswRandomValues.add(tv);// initialize necessary data
+                if (tv.isDirty()) tableViewswRandomValues.add(tv);// initialize necessary data
                 tv.calcLinksAndRadius();
                 tv.setId(i);
                 i++;
@@ -215,22 +235,20 @@ public class TableViewSorter implements Serializable {
      * @param tableViews
      * @return
      */
-    public List<LinkLine> calcLines(List<TableView> tableViews) {
-
-        for (TableView tv : tableViews) {
+    public List<LinkLine> calcLines(SchemaPage page) {
+        for (TableView tv : page.getTableViews()) {
             for (ForeignKey fk : tv.getTable().getForeignKeys().values()){
                 lines.add(new LinkLine(tv.getTable(),fk));
             }
         }
-
+        page.setLines(lines);
         return lines;
     }
 
      /**
      * Coulomb and Hooke's Law's weren't working right in this model, so I made my own force equation
      *
-     * for negative values (means there is a collision) -3 * relative Attraction * distance^2
-     * for positive values relative Attraction * distance^2
+     *  -1 * relative Attraction * distance
      *
      *
      * A positive force implies a repulsive interaction, while a negative force implies an attractive interaction.
@@ -338,27 +356,10 @@ public class TableViewSorter implements Serializable {
         return hookeForce;
     }
 
-    /**
-     * This method loads the saved initial coordinates from the database if they exist,
-     * or it uses random values if none are found in the DB.
-     * 
-     * @param tv
-     */
-    private boolean assignXandY(TableView tv, int numTables, boolean freshsort){
-        boolean needsSort = true;
-        try {
-            Connection conn = iDAO.getConnection();
-            if (freshsort || !iDAO.setCoordinates(tv, conn)) {
-                tv.setX((Math.random()) * 2 * numTables*200);
-                tv.setY((Math.random()) * 2 * numTables*50+300);
-            } else {
-                needsSort = false;
-            }
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return needsSort;
+    private void randomPositions(TableView tv, int numTables){
+        tv.setX((Math.random()) * 2 * numTables*200);
+        tv.setY((Math.random()) * 2 * numTables*50+300);
+        tv.setDirty();
     }
 
     /**
@@ -414,6 +415,14 @@ public class TableViewSorter implements Serializable {
             if (nodeDistance == level+1) return nodeDistance;
         }
         return nodeDistance;
+    }
+
+    public InternalDataDAO getIDAO() {
+        return iDAO;
+    }
+
+    public void setIDAO(InternalDataDAO iDAO) {
+        this.iDAO = iDAO;
     }
 
 }

@@ -10,37 +10,36 @@ import java.io.Serializable;
  */
 public class Table  implements Serializable{
 
-   int id = 0;
+   UUID id;
    String name = "";
    String schemaName = "";
    Map<String, Column> columns = new LinkedHashMap();
    Map<String, ForeignKey> foreignKeys = new LinkedHashMap();
    Map<String, Table> referencingTables = new LinkedHashMap();
    Map<String, PrimaryKey> primaryKeys = new LinkedHashMap();
-   Map<Integer, TableView> tablePageViews = new LinkedHashMap();
+   // by page id
+   Map<UUID, TableView> tablePageViews = new LinkedHashMap();
    int width = 0;
    int height = 0;
-   TableView defaultTableView;
 
 
    /**
     * 
     */
    public Table() {
-       defaultTableView = new TableView(this);
+       this.id = UUID.randomUUID();
    }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
    public Table(String name) {
       this.name = name;
-       defaultTableView = new TableView(this);
    }
 
    public String getName() {
@@ -112,15 +111,7 @@ public class Table  implements Serializable{
         return width;
     }
 
-    public TableView getDefaultTableView() {
-        return defaultTableView;
-    }
-
-    public void setDefaultTableView(TableView tableView) {
-        this.defaultTableView = tableView;
-    }
-
-    public Map<Integer, TableView> getTablePageViews() {
+    public Map<UUID, TableView> getTablePageViews() {
         return tablePageViews;
     }
 
@@ -129,7 +120,7 @@ public class Table  implements Serializable{
      *
      * @param tablePageViews
      */
-    private void setTablePageViews(Map<Integer, TableView> tableViews) {
+    private void setTablePageViews(Map<UUID, TableView> tableViews) {
         this.tablePageViews = tableViews;
     }
 
@@ -138,7 +129,7 @@ public class Table  implements Serializable{
      * @param tv
      * @param pageId
      */
-    public void addTableViewForPage(TableView tv, int pageId){
+    public void addTableViewForPage(TableView tv, UUID pageId){
         tablePageViews.put(pageId, tv);
     }
 

@@ -4,6 +4,7 @@ package DBViewer.models;
 import java.sql.*;
 import java.util.*;
 import DBViewer.objects.view.*;
+import DBViewer.controllers.*;
 import DBViewer.objects.model.*;
 import java.io.Serializable;
 /**
@@ -67,15 +68,15 @@ public class InternalDataDAO implements Serializable{
           try {
               Statement st = conn.createStatement();
               st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema (title PRIMARY KEY); ");
-              st.executeUpdate(" CREATE TABLE IF NOT EXISTS table (id INTEGER PRIMARY KEY, name, schema," +
+              st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_schema (id PRIMARY KEY, name, schema," +
                       " UNIQUE (name, schema), " +
                       " FOREIGN KEY (schema) REFERENCES schema(title));");
-              st.executeUpdate(" CREATE TABLE IF NOT EXISTS page (id INTEGER PRIMARY KEY, orderid INTEGER, title ); ");
-              st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_page_position (pageid INTEGER, tableid, x_pos FLOAT, y_pos FLOAT," +
-                      " UNIQUE (pageid, tablename, schema), " +
-                      " FOREIGN KEY (pageid) REFERENCES page(id), " +
-                      " FOREIGN KEY (tableid) REFERENCES table(id), " +
-                      " FOREIGN KEY (schema) REFERENCES schema(title) " +
+              st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema_page (id PRIMARY KEY, orderid INTEGER, title, schema, " +
+                      " FOREIGN KEY (schema) REFERENCES schema(title)); ");
+              st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_page_position (pageid, tableid, x_pos FLOAT, y_pos FLOAT," +
+                      " UNIQUE (pageid, tableid), " +
+                      " FOREIGN KEY (pageid) REFERENCES schema_page(id), " +
+                      " FOREIGN KEY (tableid) REFERENCES table_schema(id) " +
                       "); ");
           } catch (Exception e) {
               e.printStackTrace();
@@ -87,28 +88,48 @@ public class InternalDataDAO implements Serializable{
  * @param t
  * @param conn
  */
-      public void insertTable(Table t, Connection conn) {
+      public void saveTable(Table t, Connection conn) {
           verifySchema(t.getSchemaName(), conn);
-          String insertTableSQL = "INSERT OR REPLACE INTO table (id,name,schema) VALUES (?,?,?);";
-          String schemaPageTableSQL = "INSERT OR REPLACE INTO table_page_position (pageid,tableid,x_pos,y_pos) VALUES (?,?,?,?);";
+          String insertTableSQL = "INSERT OR REPLACE INTO table_schema (id,name,schema) VALUES (?,?,?);";
+          String insertTableViewSQL = "INSERT OR REPLACE INTO table_page_position (pageid,tableid,x_pos,y_pos) VALUES (?,?,?,?);";
           try {
               PreparedStatement ps = conn.prepareStatement(insertTableSQL);
-              ps.setInt(1, t.getId());
+              ps.setString(1, t.getId().toString());
               ps.setString(2, t.getName());
               ps.setString(3, t.getSchemaName());
               ps.executeUpdate();
 
               if (t.getTablePageViews().size()>0){
-                  ps = conn.prepareStatement(schemaPageTableSQL);
+                  ps = conn.prepareStatement(insertTableViewSQL);
                   for (TableView tv :t.getTablePageViews().values()){
-                      ps.setInt(1, tv.getTable().getId());
-                      ps.setInt(2, tv.getPage().getId());
+                      ps.setString(1, tv.getTable().getId().toString());
+                      ps.setString(2, tv.getPage().getId().toString());
                       ps.setDouble(3, tv.getX());
                       ps.setDouble(4, tv.getY());
                       ps.executeUpdate();
                   }
               }
               ps.close();
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+      }
+/**
+ * Inserts or updates a TableView
+ * @param tv
+ * @param conn
+ */
+      public void saveTablePosition(TableView tv, Connection conn){
+          verifySchema(tv.getTable().getSchemaName(), conn);
+          String insertTableViewSQL = "INSERT OR REPLACE INTO table_page_position (pageid,tableid,x_pos,y_pos) VALUES (?,?,?,?);";
+          try {
+              PreparedStatement ps = conn.prepareStatement(insertTableViewSQL);
+              ps.setString(1, tv.getTable().getId().toString());
+              ps.setString(2, tv.getPage().getId().toString());
+              ps.setDouble(3, tv.getX());
+              ps.setDouble(4, tv.getY());
+              ps.executeUpdate();
+
           } catch (Exception e) {
               e.printStackTrace();
           }
@@ -141,28 +162,34 @@ public class InternalDataDAO implements Serializable{
        * @param conn
        * @return coordsFound
        */
-      public boolean setCoordinates(TableView tv, Connection conn) {
-          boolean coordsFound = false;
-          String insertSQL = "SELECT * FROM table_position WHERE schema = ? AND name = ? LIMIT 1;";
+      public TableView makeViewWCoordinates(Table t, SchemaPage page, int numTables, Connection conn) {
+          TableView tv = new TableView(t);
+          t.addTableViewForPage(tv, page);
+          tv.setPage(page);
+          String insertSQL = "SELECT * FROM table_page_position WHERE pageid = ? AND tableid = ? LIMIT 1;";
           try {
               PreparedStatement ps = conn.prepareStatement(insertSQL);
 
-              ps.setString(1, tv.getTable().getSchemaName());
-              ps.setString(2, tv.getTable().getName());
+              ps.setString(1, page.getId().toString());
+              ps.setString(2, t.getId().toString());
 
               ResultSet rs = ps.executeQuery();
 
               if (rs.next()) {
-                  coordsFound = true;
                   tv.setX(rs.getDouble("x_pos"));
                   tv.setY(rs.getDouble("y_pos"));
                   System.out.println("Populated Coordinates for: "+tv.getTable().getName()+"{"+tv.getX()+","+tv.getY()+"}");
+                  tv.setClean();
+              } else {
+                  tv.setX((Math.random()) * 2 * numTables*200);
+                  tv.setY((Math.random()) * 2 * numTables*50+300);
+                  tv.setDirty();
               }
               rs.close();
           } catch (Exception e) {
               e.printStackTrace();
           }
-          return coordsFound;
+          return tv;
       }
 
       /**
@@ -172,22 +199,23 @@ public class InternalDataDAO implements Serializable{
        * @param conn
        * @return
        */
-      public Map<Integer,SchemaPage> readSchemaPages(String schemaName, Connection conn) {
-          String insertSQL = "SELECT * FROM schema_page_table spt, page p WHERE p.id=spt.pageid AND schema = ? ORDER BY p.orderid ASC;";
-          Map<Integer,SchemaPage> pages = new HashMap();
+      public Map<UUID,SchemaPage> readSchemaPages(SortedSchema schema, Connection conn) {
+          String insertSQL = "SELECT * FROM schema_page sp WHERE schema = ? ORDER BY sp.orderid ASC;";
+          Map<UUID,SchemaPage> pages = new HashMap();
           try {
               PreparedStatement ps = conn.prepareStatement(insertSQL);
 
-              ps.setString(1, schemaName);
+              ps.setString(1, schema.getName());
 
               ResultSet rs = ps.executeQuery();
 
               while (rs.next()) {
-                  SchemaPage p = new SchemaPage();
-                  p.setId(rs.getInt("id"));
+                  SchemaPageCache spc = SchemaPageCache.getInstance();
+                  SchemaPage p = spc.getSchemaPageByID(rs.getString("id"));
                   pages.put(p.getId(),p);
                   p.setOrderid(rs.getInt("orderid"));
                   p.setTitle(rs.getString("title"));
+                  p.setSchema(schema);
               }
               rs.close();
           } catch (Exception e) {
@@ -196,43 +224,43 @@ public class InternalDataDAO implements Serializable{
           return pages;
       }
 
-      /**
-       * Checks to see if the Table is assigned to a page, and if so connects them
-       * in memory.
-       *
-       * @param tv
-       * @param pages
-       * @param conn
-       */
-      public void readTablePage(TableView tv, Map<Integer,SchemaPage> pages, Connection conn) {
-          String SQL = "SELECT DISTINCT p.id FROM schema_page_table spt, page p WHERE p.id=spt.pageid AND tablename = ? and schema =?;";
-          try {
-              PreparedStatement ps = conn.prepareStatement(SQL);
-
-              ps.setString(1, tv.getTable().getName());
-              ps.setString(2, tv.getTable().getSchemaName());
-
-              ResultSet rs = ps.executeQuery();
-              int i =0;
-              while (rs.next()) {
-                  Integer pageid = rs.getInt("id");
-                  SchemaPage p = pages.get(pageid);
-                  // if the table is on more than one page, we need to create a new TableView for the page.
-                  if (i>0) {
-                      TableView tvNew = new TableView(tv.getTable());
-                      tvNew.setPage(p);
-                      p.getTableViews().add(tvNew);
-                  } else {
-                      tv.setPage(p);
-                      p.getTableViews().add(tv);
-                  }
-                  i++;
-              }
-              rs.close();
-          } catch (Exception e) {
-              e.printStackTrace();
-          }
-      }
+//      /**
+//       * Checks to see if the Table is assigned to a page, and if so connects them
+//       * in memory.
+//       *
+//       * @param tv
+//       * @param pages
+//       * @param conn
+//       */
+//      public void readTablePage(TableView tv, Map<Integer,SchemaPage> pages, Connection conn) {
+//          String SQL = "SELECT DISTINCT p.id FROM schema_page_table spt, page p WHERE p.id=spt.pageid AND tablename = ? and schema =?;";
+//          try {
+//              PreparedStatement ps = conn.prepareStatement(SQL);
+//
+//              ps.setString(1, tv.getTable().getName());
+//              ps.setString(2, tv.getTable().getSchemaName());
+//
+//              ResultSet rs = ps.executeQuery();
+//              int i =0;
+//              while (rs.next()) {
+//                  Integer pageid = rs.getInt("id");
+//                  SchemaPage p = pages.get(pageid);
+//                  // if the table is on more than one page, we need to create a new TableView for the page.
+//                  if (i>0) {
+//                      TableView tvNew = new TableView(tv.getTable());
+//                      tvNew.setPage(p);
+//                      p.getTableViews().add(tvNew);
+//                  } else {
+//                      tv.setPage(p);
+//                      p.getTableViews().add(tv);
+//                  }
+//                  i++;
+//              }
+//              rs.close();
+//          } catch (Exception e) {
+//              e.printStackTrace();
+//          }
+//      }
 
   /**
    * test method, creates a SQLite DB with the proper tables.

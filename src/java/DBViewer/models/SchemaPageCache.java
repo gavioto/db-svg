@@ -13,8 +13,8 @@ import java.util.*;
  */
 public class SchemaPageCache {
 
-   Map<Integer, SchemaPage> pageMap = new HashMap();
-   Map<Integer, Date> pageLastAccessed = new HashMap();
+   Map<UUID, SchemaPage> pageMap = new HashMap();
+   Map<UUID, Date> pageLastAccessed = new HashMap();
 
    private Timer timer;
    private static int SECONDS = 60*60*2;
@@ -54,7 +54,7 @@ public class SchemaPageCache {
     * @param id
     * @return
     */
-   public SchemaPage getSchemaPageByID(int id) {
+   public SchemaPage getSchemaPageByID(UUID id) {
         if (pageMap.get(id)==null){
             pageMap.put(id,new SchemaPage(id));
         }
@@ -63,11 +63,44 @@ public class SchemaPageCache {
    }
 
    /**
+    * Creates or Fetches a SchemaPage by id.
+    * @param id
+    * @return
+    */
+   public SchemaPage getSchemaPageByID(String plainid) {
+       UUID id = UUID.fromString(plainid);
+        if (pageMap.get(id)==null){
+            pageMap.put(id,new SchemaPage(id));
+        }
+        pageLastAccessed.put(id, new Date());
+        return pageMap.get(id);
+   }
+
+   /**
+    * makes a SchemaPage from scratch.
+    */
+   public SchemaPage makeSchemaPage(){
+       SchemaPage sp = new SchemaPage();
+       pageMap.put(sp.getId(), sp);
+       pageLastAccessed.put(sp.getId(), new Date());
+       return sp;
+   }
+
+
+   /**
     * Resets the timer on a page so it isn't garbaged.
     * @param id
     */
-   public void touchSchemaPage(int id) {
+   public void touchSchemaPage(UUID id) {
        pageLastAccessed.put(id, new Date());
+   }
+
+   /**
+    * Resets the timer on a page so it isn't garbaged.
+    * @param id
+    */
+   public void touchSchemaPage(String id) {
+       pageLastAccessed.put(UUID.fromString(id), new Date());
    }
 
    /**
@@ -86,7 +119,7 @@ public class SchemaPageCache {
         public void run() {
             System.out.println("Clearing all Expired Schema Pages");
             Date expirationTime = new Date(java.lang.System.currentTimeMillis() - SECONDS * 1000);
-            for (Integer i : pageMap.keySet()) {
+            for (UUID i : pageMap.keySet()) {
                 if (pageLastAccessed.get(i).before(expirationTime)) {
                     pageMap.remove(pageMap.get(i));
                     pageLastAccessed.remove(pageMap.get(i));
