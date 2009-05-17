@@ -13,6 +13,7 @@ Shows a text representation of the database.
 <%@page import="java.sql.*" %>
 <%@page import="DBViewer.objects.model.*" %>
 <%@page import="DBViewer.objects.view.*" %>
+<%@page import="DBViewer.controllers.*" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
@@ -42,17 +43,20 @@ Shows a text representation of the database.
         <%
 
     String dbi = request.getParameter("dbi");
+    String pageid = request.getParameter("page");
 
     SortedSchema currentSchema = new SortedSchema();
     if (request.getSession().getAttribute("CurrentSchema")==null || request.getSession().getAttribute("CurrentSchema").getClass()!=currentSchema.getClass()) {
+        // if no schema loaded, save the new one to the session
         request.getSession().setAttribute("CurrentSchema",currentSchema);
     } else {
+        // if a schema is found, load it from the session.
         currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
     }
-    currentSchema.prepareSchema(request.getSession(), dbi);
+    SchemaController sc = SchemaController.getInstance();
+    sc.prepareSchema(currentSchema,request.getSession(), dbi, pageid);
 
-          for (TableView tv : currentSchema.getTableViews()) {
-              Table t = tv.getTable();
+          for (Table t : currentSchema.getTables().values()) {
              out.println("<h3 class=\"ui-widget-header ui-corner-all\">"+t.getName()+"</h3><ul>");
              Map<String,Column> cols = t.getColumns();
              for (Column c : cols.values()) {

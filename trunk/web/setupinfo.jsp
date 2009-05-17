@@ -3,17 +3,22 @@
 <%@page import="java.util.*" %>
 <%@page import="java.sql.*" %>
 <%@page import="DBViewer.objects.model.*" %>
-<%@page import="DBViewer.objects.view.*" %><%
+<%@page import="DBViewer.objects.view.*" %>
+<%@page import="DBViewer.controllers.*" %><%
 
     String dbi = request.getParameter("dbi");
+    String pageid = request.getParameter("page");
 
     SortedSchema currentSchema = new SortedSchema();
     if (request.getSession().getAttribute("CurrentSchema")==null || request.getSession().getAttribute("CurrentSchema").getClass()!=currentSchema.getClass()) {
+        // if no schema loaded, save the new one to the session
         request.getSession().setAttribute("CurrentSchema",currentSchema);
     } else {
+        // if a schema is found, load it from the session.
         currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
     }
-    currentSchema.prepareSchema(request.getSession(), dbi);
+    SchemaController sc = SchemaController.getInstance();
+    sc.prepareSchema(currentSchema,request.getSession(), dbi, pageid);
 %>
 <h3 class="ui-widget-header ui-corner-all">Schema Information: <%= currentSchema.getName() %></h3>
 <table class="info">
@@ -21,20 +26,13 @@
         <td class="label">Pages: </td><td class="data"><%= currentSchema.getPages().size() %></td>
     </tr>
     <tr>
-        <td class="label">Tables: </td><td class="data"><%= currentSchema.getTableViews().size() %></td>
-    </tr>
-    <tr>
-        <td class="label">Height: </td><td class="data"><%= currentSchema.getHeight() %></td>
-    </tr>
-    <tr>
-        <td class="label">Width: </td><td class="data"><%= currentSchema.getWidth() %></td>
+        <td class="label">Tables: </td><td class="data"><%= currentSchema.getTables().size() %></td>
     </tr>
 </table>
     <br />
     <h3 class="ui-widget-header ui-corner-all">Text Version </h3>
 <%
-      for (TableView tv : currentSchema.getTableViews()) {
-              Table t = tv.getTable();
+      for (Table t : currentSchema.getTables().values()) {
              out.println("<h4 >"+t.getName()+"</h4><ul>");
              Map<String,Column> cols = t.getColumns();
              for (Column c : cols.values()) {

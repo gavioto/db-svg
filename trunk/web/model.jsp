@@ -6,6 +6,7 @@
 <%@page import="java.sql.*" %>
 <%@page import="DBViewer.objects.model.*" %>
 <%@page import="DBViewer.objects.view.*" %>
+<%@page import="DBViewer.controllers.*" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -27,6 +28,7 @@ var currentDragy;
 
 <%
     String dbi = request.getParameter("dbi");
+    String pageid = request.getParameter("page");
     
     SortedSchema currentSchema = new SortedSchema();
     if (request.getSession().getAttribute("CurrentSchema")==null || request.getSession().getAttribute("CurrentSchema").getClass()!=currentSchema.getClass()) {
@@ -34,13 +36,12 @@ var currentDragy;
     } else {
         currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
     }
-    currentSchema.prepareSchema(request.getSession(), dbi);
-
-
+    SchemaController sc = SchemaController.getInstance();
+    SchemaPage sPage = sc.prepareSchema(currentSchema,request.getSession(), dbi, pageid);
 %>
 
-  var transx = (-1*<%= currentSchema.getTransx() %>)-30;
-  var transy = (-1*<%= currentSchema.getTransy() %>)-100;
+  var transx = (-1*<%= sPage.getTransx() %>)-30;
+  var transy = (-1*<%= sPage.getTransy() %>)-100;
 
 $(function() {
 
@@ -139,7 +140,7 @@ function isWebKit(){
       <!--  <a href="#" id="zoomin">Zoom In</a>
         <a href="#" id="zoomout">Zoom Out</a> -->
         <span style="display:none; float:right; padding-right:20px;" id="coord">x-y</span>
-        <div class="svgwrapper" style="width:<%= currentSchema.getWidth() %>px;height:<%= currentSchema.getHeight() %>px;">
+        <div class="svgwrapper" style="width:<%= sPage.getWidth() %>px;height:<%= sPage.getHeight() %>px;">
             <div id="svgwindow" class="svgwindow"></div>
         </div>
     </div>

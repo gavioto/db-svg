@@ -1,17 +1,18 @@
 
+<%@page import="DBViewer.objects.view.*" %>
 <%@page import="DBViewer.objects.model.*" %>
 <%@page import="java.util.*" %>
 <%
-Table t = (Table)request.getSession().getAttribute("CurrentTable");
+TableView t = (TableView)request.getSession().getAttribute("CurrentTableView");
 
-int height = t.getHeight();
-int width = t.getWidth();
+int height = t.getTable().getHeight();
+int width = t.getTable().getWidth();
 %>
   <g
-     id="Table-<%= t.getTableView().getId() %>"
+     id="Table-<%= t.getId() %>"
      class="svgTable"
      transform="translate(<%= request.getParameter("transx") %>,<%= request.getParameter("transy") %>)">
- <a id="<%= t.getTableView().getId() %>" class="tableanchor" href="#" style="cursor: move;" onmousedown="tableDown(this);" onmouseup="tableUp(this);" onmousemove="tableMove(this);">
+ <a id="<%= t.getId() %>" class="tableanchor" href="#" style="cursor: move;" onmousedown="tableDown(this);" onmouseup="tableUp(this);" onmousemove="tableMove(this);">
     <rect
        style="opacity:0.9;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#406655;stroke-width:1.8;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="tableBody"
@@ -40,7 +41,7 @@ int width = t.getWidth();
          id="tspan3163"
          x="10"
          y="18"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Verdana;-inkscape-font-specification:Verdana"><%= t.getName() %></tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Verdana;-inkscape-font-specification:Verdana"><%= t.getTable().getName() %></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Times New Roman;-inkscape-font-specification:Times New Roman"
@@ -48,16 +49,16 @@ int width = t.getWidth();
        y="20"
        id="tableBodyText">
            <%
-           Map<String,Column> cols = t.getColumns();
+           Map<String,Column> cols = t.getTable().getColumns();
 
            double y = 48.0;
              for (Column c : cols.values()) {
                 String fk = "";
-                if (t.getForeignKeys().containsKey(c.getName())){
-                   ForeignKey key = t.getForeignKeys().get(c.getName());
+                if (t.getTable().getForeignKeys().containsKey(c.getName())){
+                   ForeignKey key = t.getTable().getForeignKeys().get(c.getName());
                    fk = " FK->"+key.getReferencedTable()+"."+key.getReferencedColumn();
                 }
-                String colname = c.getName()+(t.getPrimaryKeys().containsKey(c.getName())?" PK":"")+fk;
+                String colname = c.getName()+(t.getTable().getPrimaryKeys().containsKey(c.getName())?" PK":"")+fk;
                 %>
          <tspan
          sodipodi:role="line"
