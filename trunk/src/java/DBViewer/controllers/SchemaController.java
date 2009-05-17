@@ -7,7 +7,6 @@ import javax.servlet.http.*;
 import DBViewer.objects.model.*;
 import DBViewer.objects.view.*;
 import DBViewer.models.*;
-import DBViewer.controllers.*;
 
 /**
  * Controller in charge of reading, saving, and sorting a schema.
@@ -63,7 +62,7 @@ public class SchemaController {
         }
         boolean isNewTables = readTables(schema, session, dbi);
         
-        if (pageid!=null && !pageid.equals("")) {
+        if ((pageid!=null && !pageid.equals("")) && schema.getPages().get(UUID.fromString(pageid))!=null ) {
             try {
                 UUID pid = UUID.fromString(pageid);
                 page = schema.getPages().get(pid);
@@ -151,9 +150,13 @@ public class SchemaController {
                  sp.setOrderid(0);
              }
              for (SchemaPage page: pages.values()) {
+                 int i = 1;
                  for (Table t: schema.getTables().values()){
+                     iDAO.makeTableSchema(t, conn);
                      TableView tv = iDAO.makeViewWCoordinates(t, page, schema.getTables().size(), conn);
+                     tv.setId(i);
                      page.getTableViews().add(tv);
+                     i++;
                  }
              }
              schema.setPages(pages);
@@ -165,9 +168,9 @@ public class SchemaController {
      * Saves the positions in the already populated table views
      * @throws java.lang.Exception
      */
-    public void saveTablePositions(SortedSchema schema) throws Exception{
+    public void saveTablePositions(SchemaPage page) throws Exception{
         Connection conn = iDAO.getConnection();
-        for (TableView tv : schema.getDefaultTableViews()) {
+        for (TableView tv : page.getTableViews()) {
             iDAO.saveTablePosition(tv, conn);
         }
         conn.close();
@@ -188,16 +191,10 @@ public class SchemaController {
     public void saveTableViews(SchemaPage currentPage) {
         try {
             Connection conn = iDAO.getConnection();
-            boolean success = false;
-            String schema = "";
+            iDAO.saveSchemaPage(currentPage, conn);
             for (TableView t : currentPage.getTableViews()) {
                 iDAO.saveTablePosition(t, conn);
-                if (!success) {
-                    success = true;
-                    schema = t.getTable().getSchemaName();
-                }
             }
-
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();

@@ -8,7 +8,7 @@ import java.io.Serializable;
  *
  * @author Derrick Bowen <derrickbowen@gmail.com>
  */
-public class Table  implements Serializable{
+public class Table implements Comparable<Table>,Serializable{
 
    UUID id;
    String name = "";
@@ -30,17 +30,19 @@ public class Table  implements Serializable{
        this.id = UUID.randomUUID();
    }
 
-    public UUID getId() {
-        return id;
-    }
+   public Table(String name) {
+      this.name = name;
+       this.id = UUID.randomUUID();
+   }
+
+   public UUID getId() {
+       return id;
+   }
 
     public void setId(UUID id) {
         this.id = id;
     }
 
-   public Table(String name) {
-      this.name = name;
-   }
 
    public String getName() {
       return name;
@@ -157,5 +159,8 @@ public class Table  implements Serializable{
     public void setWidth(int width) {
         this.width = width;
     }
-   
+
+    public int compareTo(Table o) {
+        return this.name.compareTo(o.getName());
+    }
 }
