@@ -89,9 +89,9 @@ public class InternalDataDAO implements Serializable{
  * @param conn
  */
       public void saveTable(Table t, Connection conn) {
-          verifySchema(t.getSchemaName(), conn);
           String insertTableSQL = "INSERT OR REPLACE INTO table_schema (id,name,schema) VALUES (?,?,?);";
-          String insertTableViewSQL = "INSERT OR REPLACE INTO table_page_position (pageid,tableid,x_pos,y_pos) VALUES (?,?,?,?);";
+          // Better to let Controller take care of this.
+//          String insertTableViewSQL = "INSERT OR REPLACE INTO table_page_position (pageid,tableid,x_pos,y_pos) VALUES (?,?,?,?);";
           try {
               PreparedStatement ps = conn.prepareStatement(insertTableSQL);
               ps.setString(1, t.getId().toString());
@@ -99,16 +99,16 @@ public class InternalDataDAO implements Serializable{
               ps.setString(3, t.getSchemaName());
               ps.executeUpdate();
 
-              if (t.getTablePageViews().size()>0){
-                  ps = conn.prepareStatement(insertTableViewSQL);
-                  for (TableView tv :t.getTablePageViews().values()){
-                      ps.setString(1, tv.getTable().getId().toString());
-                      ps.setString(2, tv.getPage().getId().toString());
-                      ps.setDouble(3, tv.getX());
-                      ps.setDouble(4, tv.getY());
-                      ps.executeUpdate();
-                  }
-              }
+//              if (t.getTablePageViews().size()>0){
+//                  ps = conn.prepareStatement(insertTableViewSQL);
+//                  for (TableView tv :t.getTablePageViews().values()){
+//                      ps.setString(1, tv.getTable().getId().toString());
+//                      ps.setString(2, tv.getPage().getId().toString());
+//                      ps.setDouble(3, tv.getX());
+//                      ps.setDouble(4, tv.getY());
+//                      ps.executeUpdate();
+//                  }
+//              }
               ps.close();
           } catch (Exception e) {
               e.printStackTrace();
@@ -121,7 +121,6 @@ public class InternalDataDAO implements Serializable{
        * @param conn
        */
      public void saveSchemaPage(SchemaPage page, Connection conn) {
-          verifySchema(page.getSchema().getName(), conn);
           String insertPageSQL = "INSERT OR REPLACE INTO schema_page (id, orderid, title, schema) VALUES (?,?,?,?);";
           try {
               PreparedStatement ps = conn.prepareStatement(insertPageSQL);
@@ -143,13 +142,11 @@ public class InternalDataDAO implements Serializable{
      * @param conn
      */
       public void saveTablePosition(TableView tv, Connection conn){
-          verifySchema(tv.getTable().getSchemaName(), conn);
-          saveTable(tv.getTable(), conn);
           String insertTableViewSQL = "INSERT OR REPLACE INTO table_page_position (pageid,tableid,x_pos,y_pos) VALUES (?,?,?,?);";
           try {
               PreparedStatement ps = conn.prepareStatement(insertTableViewSQL);
-              ps.setString(1, tv.getTable().getId().toString());
-              ps.setString(2, tv.getPage().getId().toString());
+              ps.setString(1, tv.getPage().getId().toString());
+              ps.setString(2, tv.getTable().getId().toString());
               ps.setDouble(3, tv.getX());
               ps.setDouble(4, tv.getY());
               ps.executeUpdate();
