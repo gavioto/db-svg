@@ -46,8 +46,8 @@ if (dbi!=null) {
    version="1.0"
    sodipodi:docname="template.svg"
    onload="init();" >
-<svg:g id="DataModel"
-   transform="translate(<%= currentSchema.getTransx() %>,<%= currentSchema.getTransy() %>)">
+<svg:g id="<%= sPage.getId() %>"
+   transform="translate(<%= sPage.getTransx() %>,<%= sPage.getTransy() %>)">
 <%
 List<LinkLine> lines = sPage.getLines();
             for (LinkLine l : lines) {
