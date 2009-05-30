@@ -63,7 +63,7 @@ public class MenuController extends HttpServlet {
                 conn = iDAO.getConnection();
             }
             request.getSession().setAttribute("iDAO", iDAO);
-            iDAO.createTables(conn);
+            iDAO.setUpInternalDB(conn);
             conn.close();
 
             Map<String,ConnectionWrapper> prefs = new HashMap();

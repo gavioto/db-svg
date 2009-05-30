@@ -64,7 +64,7 @@ public class InternalDataDAO implements Serializable{
  * Makes sure that all the correct tables have been created in the internal db
  * @param conn
  */
-      public void createTables(Connection conn){
+      public void setUpInternalDB(Connection conn){
           try {
               Statement st = conn.createStatement();
               st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema (title PRIMARY KEY); ");
@@ -226,10 +226,12 @@ public class InternalDataDAO implements Serializable{
                   tv.setX(rs.getDouble("x_pos"));
                   tv.setY(rs.getDouble("y_pos"));
                   System.out.println("Populated Coordinates for: "+tv.getTable().getName()+"{"+tv.getX()+","+tv.getY()+"}");
+                  tv.calcLinksAndRadius();
                   tv.setClean();
               } else {
                   tv.setX((Math.random()) * 2 * numTables*200);
                   tv.setY((Math.random()) * 2 * numTables*50+300);
+                  tv.calcLinksAndRadius();
                   tv.setDirty();
               }
               rs.close();
@@ -257,8 +259,7 @@ public class InternalDataDAO implements Serializable{
               ResultSet rs = ps.executeQuery();
 
               while (rs.next()) {
-                  SchemaPageCache spc = SchemaPageCache.getInstance();
-                  SchemaPage p = spc.getSchemaPageByID(rs.getString("id"));
+                  SchemaPage p = new SchemaPage(rs.getString("id"));
                   pages.put(p.getId(),p);
                   p.setOrderid(rs.getInt("orderid"));
                   p.setTitle(rs.getString("title"));
@@ -280,7 +281,7 @@ public class InternalDataDAO implements Serializable{
     public static void main(String[] args) throws Exception {
         InternalDataDAO iDAO =  InternalDataDAO.getInstance("/DB-SVG/DB-SVG-2.db");
         Connection conn = iDAO.getConnection();
-        iDAO.createTables(conn);
+        iDAO.setUpInternalDB(conn);
         
     }
 
