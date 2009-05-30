@@ -221,6 +221,7 @@ public class TableView implements Comparable<TableView>, Serializable{
 
     public void setX(int x) {
         this.x = x;
+        this.dirty = true;
     }
 
     public void setX(double x) {
@@ -234,6 +235,7 @@ public class TableView implements Comparable<TableView>, Serializable{
 
     public void setY(int y) {
         this.y = y;
+        this.dirty = true;
     }
 
     public void setY(double y) {

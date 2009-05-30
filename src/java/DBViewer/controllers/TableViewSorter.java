@@ -46,8 +46,6 @@ import java.io.Serializable;
  */
 public class TableViewSorter implements Serializable {
 
-    private List<TableView> tableViews = new ArrayList();
-    private List<LinkLine> lines = new ArrayList();
     private double[][] relativeAttraction;
     InternalDataDAO iDAO;
 
@@ -115,22 +113,16 @@ public class TableViewSorter implements Serializable {
         int i = 0;
         relativeAttraction = new double[currentPage.getTableViews().size()][currentPage.getTableViews().size()];
         List<TableView> tableViewswDirtyValues = new ArrayList();
-        // arranges the tables by the table views,
-        if (currentPage==null) {
-            tableViews = currentPage.getTableViews();
-            for (TableView tv : tableViews) {
-                if (resort) randomPositions(tv, currentPage.getTableViews().size());
-                tv.setVelocityX(0.0);
-                if (tv.isDirty()) tableViewswDirtyValues.add(tv);// initialize necessary data
-                tv.calcLinksAndRadius();
-                tv.setId(i);
-                i++;
-            }
-        }
+        List<TableView> tableViews = new ArrayList();
+        
+        tableViews = currentPage.getTableViews();
         if (tableViewswDirtyValues.size()>0 || resort) {
 
             List<TableView> tableViewstoSort = new ArrayList();
              if (resort) {
+                 for (TableView tv : tableViews) {
+                    randomPositions(tv, currentPage.getTableViews().size());
+                 }
                  tableViewstoSort.addAll(tableViews);
              } else {
                 tableViewstoSort.addAll(tableViewswDirtyValues);
@@ -236,6 +228,7 @@ public class TableViewSorter implements Serializable {
      * @return
      */
     public List<LinkLine> calcLines(SchemaPage page) {
+        List<LinkLine> lines = new ArrayList();
         for (TableView tv : page.getTableViews()) {
             for (ForeignKey fk : tv.getTable().getForeignKeys().values()){
                 lines.add(new LinkLine(tv.getTable(),fk,page));
@@ -359,6 +352,7 @@ public class TableViewSorter implements Serializable {
     private void randomPositions(TableView tv, int numTables){
         tv.setX((Math.random()) * 2 * numTables*200);
         tv.setY((Math.random()) * 2 * numTables*50+300);
+        tv.calcLinksAndRadius();
         tv.setDirty();
     }
 

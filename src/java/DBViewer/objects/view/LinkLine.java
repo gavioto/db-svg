@@ -205,7 +205,7 @@ public class LinkLine implements Serializable{
     }
 
     public double getEndRadius() {
-        return 0.0;//this.foreignkey.getReference().getTable().getDefaultTableView().getRadius();
+        return this.foreignkey.getReference().getTable().getTablePageViews().get(page.getId()).getRadius();
     }
 
     public SchemaPage getPage() {

@@ -18,6 +18,11 @@ public class SchemaController {
     TableViewSorter tvSorter;
     InternalDataDAO iDAO;
 
+   // So that the Databases can be given a default page to start out with.
+   // This page will be generated when no page is found, but the user can
+   // rename it to whatever they want.
+   public static String DB_SVG_DEFAULT_NAMESPACE = "DB-SVG_DEFAULT";
+
 ///////////////////  Singletoning it  ///////////////////
    private static SchemaController instance = null;
 
@@ -122,8 +127,12 @@ public class SchemaController {
     private void prepareTableViews(SchemaPage page, boolean isNewTables) {
         List<LinkLine> lines = page.getLines();
         if (!page.areTableViewsClean() || isNewTables) {
-            tvSorter.SortAction(page,false);
-//            tvSorter.calcLines(page);
+            int numDirty = 0;
+            for (TableView tv : page.getTableViews()){
+                if (tv.isDirty()) numDirty++;
+            }
+            tvSorter.SortAction(page,numDirty==page.getTableViews().size());
+            tvSorter.calcLines(page);
         } else {
             List<TableView> tablesToClean = new ArrayList();
             for (LinkLine li : lines) {
@@ -147,9 +156,9 @@ public class SchemaController {
              Connection conn = iDAO.getConnection();
              Map<UUID,SchemaPage> pages = iDAO.readSchemaPages(schema, conn);
              if (pages.size()<1) {
-                 SchemaPage sp = SchemaPageCache.getInstance().makeSchemaPage();
+                 SchemaPage sp = new SchemaPage();
                  pages.put(sp.getId(), sp);
-                 sp.setTitle(SchemaPageCache.DB_SVG_DEFAULT_NAMESPACE);
+                 sp.setTitle(DB_SVG_DEFAULT_NAMESPACE);
                  sp.setOrderid(0);
                  sp.setSchema(schema);
              }
@@ -187,8 +196,8 @@ public class SchemaController {
  * public access method
  * @param resort
  */
-    public void resortTableViews(boolean resort, SchemaPage currentPage) {
-        tvSorter.SortAction(currentPage,resort);
+    public void resortTableViews(SchemaPage currentPage) {
+        tvSorter.SortAction(currentPage,true);
         tvSorter.calcLines(currentPage);
         currentPage.calcDimensions();
     }

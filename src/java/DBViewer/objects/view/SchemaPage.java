@@ -61,8 +61,6 @@ public class SchemaPage implements Comparable<SchemaPage>,Serializable{
             TableView t = tableViews.get(i);
             t.setX(Double.parseDouble(x_pos));
             t.setY(Double.parseDouble(y_pos));
-            t.setClean();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
