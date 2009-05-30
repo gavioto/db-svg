@@ -34,7 +34,7 @@ if (id!=null && x_pos!=null && y_pos!=null) {
 
 boolean refresh = request.getParameter("refresh")!=null;
     if (refresh)
-        sc.resortTableViews(true, sPage);
+        sc.resortTableViews(sPage);
 
 boolean save = request.getParameter("save")!=null;
     if (save) {
