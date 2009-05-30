@@ -60,7 +60,9 @@ public class SchemaController {
         } else {
             tvSorter = TableViewSorter.getInstance();
         }
-        boolean isNewTables = readTables(schema, session, dbi);
+        boolean isNewTables = false;
+        if (dbi!=null)
+           isNewTables = readTables(schema, session, dbi);
         
         if ((pageid!=null && !pageid.equals("")) && schema.getPages().get(UUID.fromString(pageid))!=null ) {
             try {
@@ -121,6 +123,7 @@ public class SchemaController {
         List<LinkLine> lines = page.getLines();
         if (!page.areTableViewsClean() || isNewTables) {
             tvSorter.SortAction(page,false);
+//            tvSorter.calcLines(page);
         } else {
             List<TableView> tablesToClean = new ArrayList();
             for (LinkLine li : lines) {
@@ -148,9 +151,10 @@ public class SchemaController {
                  pages.put(sp.getId(), sp);
                  sp.setTitle(SchemaPageCache.DB_SVG_DEFAULT_NAMESPACE);
                  sp.setOrderid(0);
+                 sp.setSchema(schema);
              }
              for (SchemaPage page: pages.values()) {
-                 int i = 1;
+                 int i = 0;
                  for (Table t: schema.getTables().values()){
                      iDAO.makeTableSchema(t, conn);
                      TableView tv = iDAO.makeViewWCoordinates(t, page, schema.getTables().size(), conn);
@@ -170,7 +174,10 @@ public class SchemaController {
      */
     public void saveTablePositions(SchemaPage page) throws Exception{
         Connection conn = iDAO.getConnection();
+        iDAO.verifySchema(page.getSchema().getName(), conn);
+        iDAO.saveSchemaPage(page, conn);
         for (TableView tv : page.getTableViews()) {
+            iDAO.saveTable(tv.getTable(), conn);
             iDAO.saveTablePosition(tv, conn);
         }
         conn.close();
@@ -181,8 +188,7 @@ public class SchemaController {
  * @param resort
  */
     public void resortTableViews(boolean resort, SchemaPage currentPage) {
-        List<TableView> tableViews = currentPage.getTableViews();
-        tableViews = tvSorter.SortAction(currentPage,resort);
+        tvSorter.SortAction(currentPage,resort);
         tvSorter.calcLines(currentPage);
         currentPage.calcDimensions();
     }

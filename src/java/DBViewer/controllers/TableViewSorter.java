@@ -114,26 +114,26 @@ public class TableViewSorter implements Serializable {
     public List<TableView> SortAction(SchemaPage currentPage, boolean resort) {
         int i = 0;
         relativeAttraction = new double[currentPage.getTableViews().size()][currentPage.getTableViews().size()];
-        List<TableView> tableViewswRandomValues = new ArrayList();
+        List<TableView> tableViewswDirtyValues = new ArrayList();
         // arranges the tables by the table views,
         if (currentPage==null) {
             tableViews = currentPage.getTableViews();
             for (TableView tv : tableViews) {
                 if (resort) randomPositions(tv, currentPage.getTableViews().size());
                 tv.setVelocityX(0.0);
-                if (tv.isDirty()) tableViewswRandomValues.add(tv);// initialize necessary data
+                if (tv.isDirty()) tableViewswDirtyValues.add(tv);// initialize necessary data
                 tv.calcLinksAndRadius();
                 tv.setId(i);
                 i++;
             }
         }
-        if (tableViewswRandomValues.size()>0 || resort) {
+        if (tableViewswDirtyValues.size()>0 || resort) {
 
             List<TableView> tableViewstoSort = new ArrayList();
              if (resort) {
                  tableViewstoSort.addAll(tableViews);
              } else {
-                tableViewstoSort.addAll(tableViewswRandomValues);
+                tableViewstoSort.addAll(tableViewswDirtyValues);
              }
             // calculate relative attraction.
             // We only need to go through half of the tables on the inner iteration, so we shortcut it.
@@ -217,9 +217,9 @@ public class TableViewSorter implements Serializable {
 //                System.out.println("  KE: "+total_kinetic_energy);
             } while ((n < 10) || (total_kinetic_energy > 1000 && n < tableViews.size() * 50));
 
-//            for (TableView tv : tableViews) {
-//                System.out.println("Table:"+tv.getTable().getName() + " "+tv.getX()+", "+tv.getY());
-//            }
+            for (TableView tv : tableViews) {
+                tv.setClean();
+            }
 
         }
 
@@ -238,7 +238,7 @@ public class TableViewSorter implements Serializable {
     public List<LinkLine> calcLines(SchemaPage page) {
         for (TableView tv : page.getTableViews()) {
             for (ForeignKey fk : tv.getTable().getForeignKeys().values()){
-                lines.add(new LinkLine(tv.getTable(),fk));
+                lines.add(new LinkLine(tv.getTable(),fk,page));
             }
         }
         page.setLines(lines);

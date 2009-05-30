@@ -14,8 +14,8 @@ import java.io.Serializable;
 public class TableView implements Comparable<TableView>, Serializable{
 
     Table table;
-    double x = 0;
-    double y = 0;
+    int x = 0;
+    int y = 0;
     double velocityX = 0.0;
     double velocityY = 0.0;
     double radius = 0;
@@ -215,21 +215,29 @@ public class TableView implements Comparable<TableView>, Serializable{
         this.table = table;
     }
 
-    public double getX() {
+    public int getX() {
         return x;
     }
 
-    public void setX(double x) {
+    public void setX(int x) {
         this.x = x;
+    }
+
+    public void setX(double x) {
+        this.x = (int)x;
         this.dirty = true;
     }
 
-    public double getY() {
+    public int getY() {
         return y;
     }
 
-    public void setY(double y) {
+    public void setY(int y) {
         this.y = y;
+    }
+
+    public void setY(double y) {
+        this.y = (int)y;
         this.dirty = true;
     }
 
