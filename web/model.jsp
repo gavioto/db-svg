@@ -52,15 +52,12 @@ $(function() {
 
       svg.mousemove(function (e){
            if (onTable) {
-              var scr = getScrollXY();
-              var scrOfX = scr[0], scrOfY = scr[1];
-              
-              var ex = e.pageX;
-              var ey = e.pageY;
+              var ex = e.clientX+f_scrollLeft();
+              var ey = e.clientY+f_scrollTop();
 
-              currentDragx = (ex+transx+scrOfX);
-              currentDragy = (ey+transy+scrOfY);
-              $('#coord').html('x:'+(currentDragx)+' y:'+(currentDragy)+' '+scrOfX+','+scrOfY);
+              currentDragx = (ex+transx);
+              currentDragy = (ey+transy);
+              $('#coord').html('x:'+(currentDragx)+' y:'+(currentDragy)+' '+f_scrollLeft()+','+f_scrollTop()+' '+window.pageYOffset+'.'+document.documentElement.scrollTop+'.'+document.body.scrollTop);
               currentTable.setAttribute('transform','translate('+(currentDragx)+','+(currentDragy)+')');
           } 
       });
@@ -102,30 +99,36 @@ $(function() {
 
     function tableMove(evt) {
     }
-    function getScrollXY() {
-	var sX = 0, sY = 0;
-          if( document.body && ( document.body.scrollLeft || document.body.scrollTop ) && ( document.body.scrollLeft!=0 || document.body.scrollTop!=0 ) ) {
-              // DOM compliant
-                sY = document.body.scrollTop; sX = document.body.scrollLeft;
-          } else if( typeof( window.pageYOffset ) == 'number' && window.pageYOffset!=0) {
-              //Netscape compliant
-                sY = window.pageYOffset; sX = window.pageXOffset;
-          } else if( document.documentElement && ( document.documentElement.scrollLeft || document.documentElement.scrollTop )  && ( document.documentElement.scrollLeft!=0 || document.documentElement.scrollTop!=0 )) {
-              //IE6 standards compliant mode
-                sY = document.documentElement.scrollTop; sX = document.documentElement.scrollLeft;
-          }
-              $('#coord').html('x:'+(currentDragx)+' y:'+(currentDragy)+' '+sX+','+sY);
-	return [ sX, sY ];
-}
 function isWebKit(){
     return RegExp(" AppleWebKit/").test(navigator.userAgent);
 }
+function f_scrollLeft() {
+	return f_filterResults (
+		window.pageXOffset ? window.pageXOffset : 0,
+		document.documentElement ? document.documentElement.scrollLeft : 0,
+		document.body ? document.body.scrollLeft : 0
+	);
+}
+function f_scrollTop() {
+	return f_filterResults (
+		window.pageYOffset ? window.pageYOffset : 0,
+		document.documentElement ? document.documentElement.scrollTop : 0,
+		document.body ? document.body.scrollTop : 0
+	);
+}
+function f_filterResults(n_win, n_docel, n_body) {
+	var n_result = n_win ? n_win : 0;
+	if (n_docel && (!n_result || (n_result > n_docel)))
+		n_result = n_docel;
+	return n_body && (!n_result || (n_result > n_body)) ? n_body : n_result;
+}
+
 
 
 </script>
     </head>
     <body>
-    <div class="titleHeader" style="">
+    <div class="titleHeader" >
             <div class="titleLeft"></div>
             <div class="titleRight"></div>
             <div class="titleBody">
@@ -138,7 +141,7 @@ function isWebKit(){
 <a href="#"><div class="tab">Tab 1</div></a>
         </div>
         <div class="menu">
-            <a href="Menu">Back to Menu</a><a href="setup.jsp?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#ajaxFunctions.jsp?refresh=true">Re-sort</a><a id="saver" href="#ajaxFunctions.jsp?save=true">Save</a><a href="schema.svg.jsp" target="_blank">Download</a>
+            <a href="Menu">Back to Menu</a><a href="setup.jsp?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#ajaxFunctions.jsp?refresh=true">Re-sort</a><a id="saver" href="#ajaxFunctions.jsp?save=true">Save</a><a href="schema.svg.jsp" target="_blank">Download</a><span class="coord" id="coord">x,y</span>
         </div>
       <!--  <a href="#" id="zoomin">Zoom In</a>
         <a href="#" id="zoomout">Zoom Out</a> -->
@@ -147,6 +150,6 @@ function isWebKit(){
             <div id="svgwindow" class="svgwindow"></div>
         </div>
     </div>
-    <div style="padding-left:200px; display:none;"><a href="javascript:getScrollXY();">get the scrolling offsets</a></div>
+    <div style="padding-left:200px; display:none;"><a href="javascript:alert(f_scrollLeft()+','+f_scrollTop()+' '+window.pageYOffset+'.'+document.documentElement.scrollTop+'.'+document.body.scrollTop);">get the scrolling offsets</a></div>
     </body>
 </html>
