@@ -86,42 +86,39 @@ $(function() {
     
     function tableUp(evt) {
         onTable = false;
-        var xx = currentDragx;
-        var yy = currentDragy;
         $.post("ajaxFunctions.jsp", { "name": evt.id, "x": currentDragx, "y": currentDragy },
            function(data){
             // alert("Data Loaded: " + data);
             location.reload(true);
            });
-
-        //svg = $('#svgwindow').svg({loadURL: 'schema.svg.jsp'});
     }
 
     function tableMove(evt) {
     }
-function isWebKit(){
-    return RegExp(" AppleWebKit/").test(navigator.userAgent);
-}
-function f_scrollLeft() {
-	return f_filterResults (
-		window.pageXOffset ? window.pageXOffset : 0,
-		document.documentElement ? document.documentElement.scrollLeft : 0,
-		document.body ? document.body.scrollLeft : 0
-	);
-}
-function f_scrollTop() {
-	return f_filterResults (
-		window.pageYOffset ? window.pageYOffset : 0,
-		document.documentElement ? document.documentElement.scrollTop : 0,
-		document.body ? document.body.scrollTop : 0
-	);
-}
-function f_filterResults(n_win, n_docel, n_body) {
-	var n_result = n_win ? n_win : 0;
-	if (n_docel && (!n_result || (n_result > n_docel)))
-		n_result = n_docel;
-	return n_body && (!n_result || (n_result > n_body)) ? n_body : n_result;
-}
+
+    function isWebKit(){
+        return RegExp(" AppleWebKit/").test(navigator.userAgent);
+    }
+    function f_scrollLeft() {
+          return f_filterResults (
+                window.pageXOffset ? window.pageXOffset : 0,
+                document.documentElement ? document.documentElement.scrollLeft : 0,
+                document.body ? document.body.scrollLeft : 0
+          );
+    }
+    function f_scrollTop() {
+          return f_filterResults (
+                window.pageYOffset ? window.pageYOffset : 0,
+                document.documentElement ? document.documentElement.scrollTop : 0,
+                document.body ? document.body.scrollTop : 0
+          );
+    }
+    function f_filterResults(n_win, n_docel, n_body) {
+          var n_result = n_win ? n_win : 0;
+          if (n_docel && (!n_result || (n_result > n_docel)))
+                n_result = n_docel;
+          return n_body && (!n_result || (n_result > n_body)) ? n_body : n_result;
+    }
 
 
 
@@ -137,15 +134,12 @@ function f_filterResults(n_win, n_docel, n_body) {
     </div>
     <div id="content" class="modelContentBox">
         <div class="tablayer">
-<a href="#"><div class="tab">Tab 2</div></a>
-<a href="#"><div class="tab">Tab 1</div></a>
+<a href="#"><div class="tab">Page 2</div></a>
+<a href="#"><div class="tab">Page 1</div></a>
         </div>
         <div class="menu">
             <a href="Menu">Back to Menu</a><a href="setup.jsp?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#ajaxFunctions.jsp?refresh=true">Re-sort</a><a id="saver" href="#ajaxFunctions.jsp?save=true">Save</a><a href="schema.svg.jsp" target="_blank">Download</a><span class="coord" id="coord">x,y</span>
         </div>
-      <!--  <a href="#" id="zoomin">Zoom In</a>
-        <a href="#" id="zoomout">Zoom Out</a> -->
-        <span style="display:none; float:right; padding-right:20px;" id="coord">x-y</span>
         <div class="svgwrapper" style="width:<%= sPage.getWidth() %>px;height:<%= sPage.getHeight() %>px;">
             <div id="svgwindow" class="svgwindow"></div>
         </div>
