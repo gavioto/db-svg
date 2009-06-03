@@ -120,8 +120,6 @@ $(function() {
           return n_body && (!n_result || (n_result > n_body)) ? n_body : n_result;
     }
 
-
-
 </script>
     </head>
     <body>
@@ -138,12 +136,11 @@ $(function() {
 <a href="#"><div class="tab">Page 1</div></a>
         </div>
         <div class="menu">
-            <a href="Menu">Back to Menu</a><a href="setup.jsp?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#ajaxFunctions.jsp?refresh=true">Re-sort</a><a id="saver" href="#ajaxFunctions.jsp?save=true">Save</a><a href="schema.svg.jsp" target="_blank">Download</a><span class="coord" id="coord">x,y</span>
+            <a href="Menu">Back to Menu</a><a href="setup.jsp?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#ajaxFunctions.jsp?refresh=true">Re-sort</a><a id="saver" href="#ajaxFunctions.jsp?save=true">Save</a><a href="schema.svg.jsp" target="_blank">Download</a><span class="coord" id="coord" style="display:none">x,y</span>
         </div>
         <div class="svgwrapper" style="width:<%= sPage.getWidth() %>px;height:<%= sPage.getHeight() %>px;">
             <div id="svgwindow" class="svgwindow"></div>
         </div>
     </div>
-    <div style="padding-left:200px; display:none;"><a href="javascript:alert(f_scrollLeft()+','+f_scrollTop()+' '+window.pageYOffset+'.'+document.documentElement.scrollTop+'.'+document.body.scrollTop);">get the scrolling offsets</a></div>
     </body>
 </html>
