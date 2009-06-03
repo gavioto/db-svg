@@ -3,9 +3,6 @@ body,html {
     color:#17212c;
     background-color:#e0e0da;
     font-family: Verdana,Arial,Helvetica,sans-serif;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
 }
 
 .titleBox {
