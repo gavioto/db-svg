@@ -1,3 +1,23 @@
+/*
+ * DB-SVG Copyright 2009 Derrick Bowen
+ *
+ * This file is part of DB-SVG.
+ *
+ *   DB-SVG is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   DB-SVG is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ */
 package DBViewer.testing;
 
 
@@ -14,11 +34,6 @@ import org.w3c.dom.*;
  * @author Derrick Bowen <derrickbowen@gmail.com>
  */
 public class Tester {
-
-//    private static String url = "jdbc:mysql://localhost:3306/movelib";
-//    private static String driver = "com.mysql.jdbc.Driver";
-//    private static String username = "test";
-//    private static String password = "zarahemla";
 
 
     private static String url = "jdbc:sqlite:/DB-SVG/DB-SVG.db";
