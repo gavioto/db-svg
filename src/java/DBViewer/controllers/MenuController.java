@@ -1,6 +1,22 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * DB-SVG Copyright 2009 Derrick Bowen
+ * 
+ * This file is part of DB-SVG.
+ *
+ *   DB-SVG is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   DB-SVG is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
  */
 
 package DBViewer.controllers;
@@ -83,6 +99,7 @@ public class MenuController extends HttpServlet {
                     "        <title>DB-SVG | Menu</title>" +
                     "        <link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"css/style.css\" />" +
                     "        <link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"css/jq-ui.css\" />" +
+                    "        <link rel=\"shortcut icon\" href=\"favicon.ico\" type=\"image/x-icon\" /> " +
                     "        <script type=\"text/javascript\" src=\"js/jquery.js\"></script>\n" +
                     "        <script type=\"text/javascript\" src=\"js/jquery-ui.min.js\"></script>\n" +
                     "        <script type=\"text/javascript\">\n" +
