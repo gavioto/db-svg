@@ -16,6 +16,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/********************** Start of Application Styles *********************/
 body,html {
     margin: 0px;
     color:#17212c;
@@ -66,20 +68,9 @@ body,html {
     overflow: auto;
 }
 
-.modelContentBox {
+.modelContentBox, .contentBoxMenu, .setupContentBox {
     padding: 4px;
     padding-left: 10px;
-}
-
-.contentBoxMenu {
-    position: absolute;
-    padding: 4px;
-    padding-left: 10px;
-    top: 55px;
-    bottom: 4em;
-    left: 0;
-    right: 0;
-    overflow: auto;
 }
 
 .footer {
@@ -156,21 +147,41 @@ a {
     color:#444444;
     text-decoration: none;
 }
-
-.menusetup a {
-    margin-left:1em;
-    color:#888888;
-    text-decoration: none;
-}
 a:hover {
     color:#666666;
     text-decoration: underline;
 }
 
-.menusetup a:hover {
+.frontmenusetup a {
+    margin-left:.7em;
+    color:#888888;
+    text-decoration: none;
+}
+.frontmenuremove a {
+    margin-left:.4em;
+    color:#888888;
+    text-decoration: none;
+}
+.frontmenusetup a:hover, .frontmenuremove a:hover {
     color:#AAAAAA;
     text-decoration: none;
 }
+
+.frontmenulist li {
+    margin: 10px 5px;
+}
+li.frontmenuadd {
+    list-style: none;
+}
+.frontmenuadd a {
+    color:#888888;
+    text-decoration: none;
+}
+.frontmenuadd a:hover {
+    color:#666666;
+    text-decoration: none;
+}
+
 .menu {
     padding:2px;
     margin-bottom:5px;
@@ -199,9 +210,7 @@ a:hover {
     -moz-box-shadow: 2px 2px 5px #d1d1d1;
     -webkit-box-shadow: 2px 2px 5px #d1d1d1;
 }
-
 .tablayer {
-    display:none;
     font-size:small;
     padding-right:15px;
 }
@@ -275,12 +284,10 @@ ul {
 .drawOpt { float: left; width: 25%; }
 .row { clear: both; }
 #loadDialog {
-    visibility:hidden;
     font-size:.8em !important;
 }
 #loadDialog p {
-    font-size:.8em !important;
-    color:#333 !important;
+    padding-top:10px;
 }
 .info {
     margin:5px;
@@ -294,4 +301,24 @@ ul {
 .info .label {
     font-weight:bold;
     width:7em;
+}
+.pagesTable {
+    border: solid 1px #cccccc;
+    padding:10px;
+    margin:10px;
+     -moz-border-radius: 3px;
+     -webkit-border-radius: 3px;
+}
+.pagesTable td{
+    margin:2px;
+}
+
+.pagesTable .pagebox{
+    text-align:center;
+}
+.pagesButtons {
+    float:right;
+    margin-top:2px;
+    margin-left:20px;
+    margin-right:20px;
 }

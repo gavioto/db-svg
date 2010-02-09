@@ -28,7 +28,7 @@
         <description>Path to Location of SQLite App DB</description>
         <env-entry-name>AppDBLocation</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>/DB-SVG/DB-SVG.db</env-entry-value>
+        <env-entry-value>DB-SVG.db</env-entry-value>
     </env-entry>
     <env-entry>
         <description>Failover Path to Available DB definitions</description>

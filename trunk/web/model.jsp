@@ -149,11 +149,10 @@ $(function() {
             <h1>DB-SVG Data Model Explorer</h1>
         </div>
     </div>
-    <div id="content" class="modelContentBox">
-        <div class="tablayer">
-<a href="#"><div class="tab">Page 2</div></a>
-<a href="#"><div class="tab">Page 1</div></a>
-        </div>
+    <div id="content" class="modelContentBox"><% if (currentSchema.getPages().size()>1) { %>
+        <div class="tablayer"><% for (SchemaPage p :currentSchema.getPages().values()) { %>
+<a href="#"><div class="tab"><%= p.getTitle() %></div></a><% } %>
+        </div><% } %>
         <div class="menu">
             <a href="Menu">Back to Menu</a><a href="setup.jsp?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#ajaxFunctions.jsp?refresh=true">Re-sort</a><a id="saver" href="#ajaxFunctions.jsp?save=true">Save</a><a href="schema.svg.jsp" target="_blank">Download</a><span class="coord" id="coord" style="display:none">x,y</span>
         </div>
