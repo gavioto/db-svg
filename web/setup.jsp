@@ -64,7 +64,6 @@
         </script>
     </head>
     <body>
-    <div class="titleBox">
         <div class="titleHeader">
             <div class="titleLeft"></div>
             <div class="titleRight"></div>
@@ -72,11 +71,10 @@
                 <h1>DB-SVG Schema Setup</h1>
             </div>
         </div>
-        <div class="menu">
-        <a href="Menu">Back to Menu</a><a href="model.jsp?dbi=<%= request.getParameter("dbi") %>">Diagram</a><a id="info" href="#schemaInfo">Schema Info</a><a id="pages" href="#pagesConfig">Pages</a>
-        </div>
+    <div id="content" class="setupContentBox">
+    <div class="menu">
+    <a href="Menu">Back to Menu</a><a href="model.jsp?dbi=<%= request.getParameter("dbi") %>">Diagram</a><a id="info" href="#schemaInfo">Schema Info</a><a id="pages" href="#pagesConfig">Pages</a>
     </div>
-    <div id="content" class="contentBox">
       <div id="changer">
           <jsp:include page="setupInfo.jsp"></jsp:include>
       </div>
