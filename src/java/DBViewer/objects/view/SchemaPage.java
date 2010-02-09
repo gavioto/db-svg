@@ -22,6 +22,7 @@ package DBViewer.objects.view;
 
 import java.util.*;
 import java.io.Serializable;
+import DBViewer.objects.model.*;
 /**
  *
  * @author horizon
@@ -189,6 +190,18 @@ public class SchemaPage implements Comparable<SchemaPage>,Serializable{
             return 1;
         else
             return -1;
+    }
+
+    /**
+     * Checks to see if the given table is in the schema page.
+     * @param t
+     * @return
+     */
+    public boolean contains(Table t){
+            for (TableView tv : tableViews){
+                if (tv.getTable().getId().compareTo(t.getId())==0) return true;
+            }
+        return false;
     }
     
 
