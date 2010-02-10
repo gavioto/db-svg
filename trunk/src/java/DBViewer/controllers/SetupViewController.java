@@ -1,6 +1,6 @@
 /*
  * DB-SVG Copyright 2009 Derrick Bowen
- * 
+ *
  * This file is part of DB-SVG.
  *
  *   DB-SVG is free software: you can redistribute it and/or modify
@@ -21,29 +21,22 @@
 
 package DBViewer.controllers;
 
+import DBViewer.objects.view.SchemaPage;
+import DBViewer.objects.view.SortedSchema;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import DBViewer.models.*;
-import java.util.*;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import java.sql.*;
 
 /**
  *
  * @author horizon
  */
-public class MenuController extends HttpServlet {
-
+public class SetupViewController extends HttpServlet {
+   
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     *
-     * creates a the main menu page for the application.  Reads the settings for the dbs.xml config file,
-     * as well as the path to the internal database.  If the initial context values are not correct, it
-     * tries the failover values.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -51,37 +44,51 @@ public class MenuController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        try {
-            Context env = (Context) new InitialContext().lookup("java:comp/env");
 
-            String iDAOpath = (String)env.lookup("AppDBLocation");
+        // collect available parameters and initialize/retrieve objects
+        String dbi = request.getParameter("dbi");
+        String pageid = request.getParameter("page");
+        if (pageid == null) {
+            pageid = (String) request.getSession().getAttribute("pageid");
+        }
+        SortedSchema currentSchema = new SortedSchema();
+        if (request.getSession().getAttribute("CurrentSchema") == null || request.getSession().getAttribute("CurrentSchema").getClass() != currentSchema.getClass()) {
+            // if no schema loaded, save the new one to the session
+            request.getSession().setAttribute("CurrentSchema", currentSchema);
+        } else {
+            // if a schema is found, load it from the session.
+            currentSchema = (SortedSchema) request.getSession().getAttribute("CurrentSchema");
+        }
+        SchemaController sc = SchemaController.getInstance();
+        // prepare the requested page of the schema for display.
+        SchemaPage sPage = sc.prepareSchema(currentSchema, request.getSession(), dbi, pageid);
 
-            InternalDataDAO iDAO = InternalDataDAO.getInstance(iDAOpath);
-            Connection conn = null;
-            try {
-                conn = iDAO.getConnection();
-            } catch (SQLException e) {
-                System.out.println("Attempting Second DB path.");
-                iDAOpath = (String)env.lookup("AppDBLocation2");
-                iDAO.setPath(iDAOpath);
-                conn = iDAO.getConnection();
-            }
-            request.getSession().setAttribute("iDAO", iDAO);
-            iDAO.setUpInternalDB(conn);
+        request.getSession().setAttribute("CurrentPage", sPage);
 
-            Map<String,ConnectionWrapper> prefs = new HashMap();
-            prefs = iDAO.readAllConnectionWrappers(conn);
-            request.getSession().setAttribute("DB-Connections", prefs);
-            
-            conn.close();
+        String m = request.getParameter("m");
 
+// ----------------------------------->   SETUP INFO ACTION
+        if (m!=null && m.equals("info")) {
             getServletConfig().getServletContext().getRequestDispatcher(
-                        "/menu.jsp").forward(request, response);
+                        "/setupInfo.jsp").forward(request, response);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        } 
-    }
+// ----------------------------------->   SETUP PAGES ACTION
+        } else if (m!=null && m.equals("pages")) {
+            getServletConfig().getServletContext().getRequestDispatcher(
+                        "/setupPages.jsp").forward(request, response);
+
+// ----------------------------------->   DEFAULT SETUP DISPLAY ACTION
+        } else if (m!=null && m.equals("edit")) {
+            getServletConfig().getServletContext().getRequestDispatcher(
+                        "/setupEditConnection.jsp").forward(request, response);
+
+// ----------------------------------->   DEFAULT SETUP DISPLAY ACTION
+        } else {
+            getServletConfig().getServletContext().getRequestDispatcher(
+                        "/setup.jsp").forward(request, response);
+        }
+    } 
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
      * Handles the HTTP <code>GET</code> method.

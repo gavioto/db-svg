@@ -128,8 +128,28 @@ public class InternalDataDAO implements Serializable {
     }
 
     /**
-     * The method to save a connection when there is NOT already an ID.
+     * I chose to delete becuase it's easy enough to put it in again, and maybe they
+     * deleted it because the information was sensitive.
      *
+     * @param c
+     * @param conn
+     */
+    public void deleteConnectionWrapper(String id, Connection conn) {
+        String insertConnectionSQL = "DELETE FROM connection WHERE id = ?;";
+        try {
+            PreparedStatement ps = conn.prepareStatement(insertConnectionSQL);
+            ps.setString(1, id);
+            ps.executeUpdate();
+
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * The method to save a connection when there is NOT already an ID.
+     *  saves to the db and adds the id to the object.
      * @param c
      * @param conn
      */
@@ -145,6 +165,18 @@ public class InternalDataDAO implements Serializable {
             ps.executeUpdate();
 
             ps.close();
+
+            String lastrowidSQL = "select last_insert_rowid() as id";
+            PreparedStatement ps2 = conn.prepareStatement(lastrowidSQL);
+
+            ResultSet rs = ps2.executeQuery();
+
+            if (rs.next()) {
+                c.setId(rs.getInt("id"));
+            }
+            ps2.close();
+            rs.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
