@@ -4,11 +4,30 @@
     <distributable/>
     <servlet>
         <servlet-name>MenuController</servlet-name>
-        <servlet-class>DBViewer.controllers.MenuController</servlet-class>
+        <servlet-class>DBViewer.controllers.MenuViewController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SetupViewController</servlet-name>
+        <servlet-class>DBViewer.controllers.SetupViewController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ModelViewController</servlet-name>
+        <servlet-class>DBViewer.controllers.ModelViewController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ModelViewController</servlet-name>
+        <url-pattern>/Model</url-pattern>
+        <url-pattern>/model</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SetupViewController</servlet-name>
+        <url-pattern>/setup</url-pattern>
+        <url-pattern>/Setup</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>MenuController</servlet-name>
         <url-pattern>/Menu</url-pattern>
+        <url-pattern>/menu</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -17,7 +36,7 @@
     </session-config>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
-        </welcome-file-list>
+    </welcome-file-list>
     <env-entry>
         <description>Path to Available DB definitions</description>
         <env-entry-name>DBXMLPATH</env-entry-name>
@@ -42,4 +61,4 @@
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>C:\DB-SVG\DB-SVG.db</env-entry-value>
     </env-entry>
-    </web-app>
+</web-app>

@@ -45,7 +45,7 @@
     $(function() {
 
         $('#info').click(function(){
-           $.post("setupInfo.jsp", { "dbi": dbi },
+           $.post("Setup", { "m": "info", "dbi": dbi },
            function(data){
                $('#changer').html(data);
            });
@@ -53,7 +53,7 @@
       });
 
       $('#pages').click(function(){
-           $.post("setupPages.jsp", { "refresh": "true" },
+           $.post("Setup", { "m": "pages", "refresh": "true" },
            function(data){
                $('#changer').html(data);
            });
@@ -73,7 +73,7 @@
         </div>
     <div id="content" class="setupContentBox">
     <div class="menu">
-    <a href="Menu">Back to Menu</a><a href="model.jsp?dbi=<%= request.getParameter("dbi") %>">Diagram</a><a id="info" href="#schemaInfo">Schema Info</a><a id="pages" href="#pagesConfig">Pages</a>
+    <a href="Menu">Back to Menu</a><a href="Model?dbi=<%= request.getParameter("dbi") %>">Diagram</a><a id="info" href="#schemaInfo">Schema Info</a><a id="pages" href="#pagesConfig">Pages</a>
     </div>
       <div id="changer">
           <jsp:include page="setupInfo.jsp"></jsp:include>
