@@ -92,12 +92,13 @@ public class TableViewSorter implements Serializable {
         this.iDAO = iDAO;
     }
 
-   /**
-    * private constructor
-    */
-   private TableViewSorter() {
-       this.iDAO = iDAO.getInstance("/test.db");
-    }
+//Was causing the program to load an incorrenct internal DAO database
+//   /**
+//    * private constructor
+//    */
+//   private TableViewSorter() {
+//       this.iDAO = iDAO.getInstance("/test.db");
+//    }
 
    /**
     * returns an instance of the Controller.
@@ -112,16 +113,17 @@ public class TableViewSorter implements Serializable {
       return instance;
    }
 
-    /**
-    * returns an instance of the Controller.
-    * @return
-    */
-   public static TableViewSorter getInstance() {
-      if (instance == null) {
-         instance = new TableViewSorter();
-      } 
-      return instance;
-   }
+//    Was causing the program to load an incorrenct internal DAO database
+//    /**
+//    * returns an instance of the Controller.
+//    * @return
+//    */
+//   public static TableViewSorter getInstance() {
+//      if (instance == null) {
+//         instance = new TableViewSorter();
+//      }
+//      return instance;
+//   }
 
     /**
      * Main action method, gets everything set up and runs the Force-Based sorting algorithm

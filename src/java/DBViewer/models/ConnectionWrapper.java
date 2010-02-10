@@ -27,7 +27,7 @@ import java.io.Serializable;
  *
  * @author horizon
  */
-public class ConnectionWrapper implements Serializable{
+public class ConnectionWrapper implements Comparable<ConnectionWrapper>,Serializable{
 
     private int id;
     private String title = "";
@@ -95,5 +95,18 @@ public class ConnectionWrapper implements Serializable{
        return null;
     }
 
-    
+    /**
+     * Sort ConnectionWrappers by their Title
+     * @param o
+     * @return
+     */
+    public int compareTo(ConnectionWrapper o) {
+        if (this == null && o == null) return 0;
+        if (this == null) return 1;
+        if (o == null) return -1;
+        if (this.getTitle() == null && o.getTitle() == null) return 0;
+        if (this.getTitle() == null) return 1;
+        if (o.getTitle() == null) return -1;
+        return this.getTitle().compareToIgnoreCase(o.getTitle());
+    }
 }

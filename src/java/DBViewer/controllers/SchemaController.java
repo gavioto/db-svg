@@ -26,6 +26,8 @@ import javax.servlet.http.*;
 import DBViewer.objects.model.*;
 import DBViewer.objects.view.*;
 import DBViewer.models.*;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 
 /**
  * Controller in charge of reading, saving, and sorting a schema.
@@ -36,33 +38,31 @@ public class SchemaController {
     MainDAO dao = MainDAO.getInstance();
     TableViewSorter tvSorter;
     InternalDataDAO iDAO;
-
-   // So that the Databases can be given a default page to start out with.
-   // This page will be generated when no page is found, but the user can
-   // rename it to whatever they want.
-   public static String DB_SVG_DEFAULT_NAMESPACE = "DB-SVG_DEFAULT";
-
+    // So that the Databases can be given a default page to start out with.
+    // This page will be generated when no page is found, but the user can
+    // rename it to whatever they want.
+    public static String DB_SVG_DEFAULT_NAMESPACE = "DB-SVG_DEFAULT";
 ///////////////////  Singletoning it  ///////////////////
-   private static SchemaController instance = null;
+    private static SchemaController instance = null;
 
-   /**
-    * private constructor
-    */
-   private SchemaController () {
-   }
+    /**
+     * private constructor
+     */
+    private SchemaController() {
+    }
 
-   /**
-    * returns an instance of the Controller.
-    * @return
-    */
-   public static SchemaController getInstance() {
-      if (instance == null) {
-         instance = new SchemaController();
-      }
-      return instance;
-   }
+    /**
+     * returns an instance of the Controller.
+     * @return
+     */
+    public static SchemaController getInstance() {
+        if (instance == null) {
+            instance = new SchemaController();
+        }
+        return instance;
+    }
 
-   /**
+    /**
      * Contains Logic for preparing a schema's tables.
      * checks to see if it has already been sorted, and things like that.
      *
@@ -71,29 +71,37 @@ public class SchemaController {
      * @param session
      * @param dbi
      */
-    public SchemaPage prepareSchema(SortedSchema schema, HttpSession session, String dbi, String pageid){
+    public SchemaPage prepareSchema(SortedSchema schema, HttpSession session, String dbi, String pageid) {
         SchemaPage page;
         try {
-            iDAO = (InternalDataDAO)session.getAttribute("iDAO");
+            //attempt to get the Internal Database
+            iDAO = (InternalDataDAO) session.getAttribute("iDAO");
+            if (iDAO == null) {
+                throw new Exception("Error Retreiving internal Database");
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            iDAO = InternalDataDAO.getInstance("~/unset.db");
+            try {
+                Context env = (Context) new InitialContext().lookup("java:comp/env");
+                String iDAOpath = (String) env.lookup("AppDBLocation");
+                iDAO = InternalDataDAO.getInstance(iDAOpath);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
-        if (TableViewSorter.getInstance().getIDAO()==null) {
-            tvSorter = TableViewSorter.getInstance(iDAO);
-        } else {
-            tvSorter = TableViewSorter.getInstance();
-        }
+        //get the table sorting object
+        tvSorter = TableViewSorter.getInstance(iDAO);
         boolean isNewTables = false;
-        if (dbi!=null)
-           isNewTables = readTables(schema, session, dbi);
-        
-        if ((pageid!=null && !pageid.equals("")) && schema.getPages().get(UUID.fromString(pageid))!=null ) {
+        if (dbi != null) {
+            isNewTables = readTables(schema, session, dbi);
+        }
+
+        if ((pageid != null && !pageid.equals("")) && schema.getPages().get(UUID.fromString(pageid)) != null) {
             try {
                 UUID pid = UUID.fromString(pageid);
                 page = schema.getPages().get(pid);
                 prepareTableViews(page, isNewTables);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 page = new SchemaPage();
                 System.out.println("Error with Page ID");
             }
@@ -112,28 +120,28 @@ public class SchemaController {
      */
     private boolean readTables(SortedSchema schema, HttpSession session, String dbi) {
         boolean newTables = false;
-        if (session.getAttribute("CurrentDBI")==null ||
-                (session.getAttribute("CurrentDBI")!=null && !session.getAttribute("CurrentDBI").equals(dbi))) {
+        if (session.getAttribute("CurrentDBI") == null
+                || (session.getAttribute("CurrentDBI") != null && !session.getAttribute("CurrentDBI").equals(dbi))) {
 
             Object dbc = session.getAttribute("DB-Connections");
-            Map<String,ConnectionWrapper> cwmap = new HashMap<String,ConnectionWrapper>();
+            Map<String, ConnectionWrapper> cwmap = new HashMap<String, ConnectionWrapper>();
 
-            if (dbc!=null && dbc.getClass()==cwmap.getClass()) {
-              cwmap = (Map<String,ConnectionWrapper>)dbc;
+            if (dbc != null && dbc.getClass() == cwmap.getClass()) {
+                cwmap = (Map<String, ConnectionWrapper>) dbc;
 
-              try {
-                 Connection conn = cwmap.get(dbi).getConnection();
-                 schema.setTables(dao.getTables(conn,cwmap.get(dbi).getTitle()));
-                 schema.setName(cwmap.get(dbi).getTitle());
-                 session.setAttribute("CurrentDBI",dbi);
-                 newTables = true;
-                 readSchemaPages(schema);
-                 // maybe set defaultpage here?
-              } catch (Exception e) {
-                 e.printStackTrace();
-             }
-          }
-       }
+                try {
+                    Connection conn = cwmap.get(dbi).getConnection();
+                    schema.setTables(dao.getTables(conn, cwmap.get(dbi).getTitle()));
+                    schema.setName(cwmap.get(dbi).getTitle());
+                    session.setAttribute("CurrentDBI", dbi);
+                    newTables = true;
+                    readSchemaPages(schema);
+                    // maybe set defaultpage here?
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         return newTables;
     }
 
@@ -147,10 +155,12 @@ public class SchemaController {
         List<LinkLine> lines = page.getLines();
         if (!page.areTableViewsClean() || isNewTables) {
             int numDirty = 0;
-            for (TableView tv : page.getTableViews()){
-                if (tv.isDirty()) numDirty++;
+            for (TableView tv : page.getTableViews()) {
+                if (tv.isDirty()) {
+                    numDirty++;
+                }
             }
-            tvSorter.SortAction(page,numDirty==page.getTableViews().size());
+            tvSorter.SortAction(page, numDirty == page.getTableViews().size());
             tvSorter.calcLines(page);
         } else {
             List<TableView> tablesToClean = new ArrayList();
@@ -170,37 +180,37 @@ public class SchemaController {
      *
      * @throws java.lang.Exception
      */
-    private void readSchemaPages(SortedSchema schema) throws Exception{
-        if (schema.getTables().size()>0) {
-             Connection conn = iDAO.getConnection();
-             Map<UUID,SchemaPage> pages = iDAO.readSchemaPages(schema, conn);
-             if (pages.size()<1) {
-                 SchemaPage sp = new SchemaPage();
-                 pages.put(sp.getId(), sp);
-                 sp.setTitle(DB_SVG_DEFAULT_NAMESPACE);
-                 sp.setOrderid(0);
-                 sp.setSchema(schema);
-             }
-             for (SchemaPage page: pages.values()) {
-                 int i = 0;
-                 for (Table t: schema.getTables().values()){
-                     iDAO.makeTableSchema(t, conn);
-                     TableView tv = iDAO.makeViewWCoordinates(t, page, schema.getTables().size(), conn);
-                     tv.setId(i);
-                     page.getTableViews().add(tv);
-                     i++;
-                 }
-             }
-             schema.setPages(pages);
-             conn.close();
-         }
+    private void readSchemaPages(SortedSchema schema) throws Exception {
+        if (schema.getTables().size() > 0) {
+            Connection conn = iDAO.getConnection();
+            Map<UUID, SchemaPage> pages = iDAO.readSchemaPages(schema, conn);
+            if (pages.size() < 1) {
+                SchemaPage sp = new SchemaPage();
+                pages.put(sp.getId(), sp);
+                sp.setTitle(DB_SVG_DEFAULT_NAMESPACE);
+                sp.setOrderid(0);
+                sp.setSchema(schema);
+            }
+            for (SchemaPage page : pages.values()) {
+                int i = 0;
+                for (Table t : schema.getTables().values()) {
+                    iDAO.makeTableSchema(t, conn);
+                    TableView tv = iDAO.makeViewWCoordinates(t, page, schema.getTables().size(), conn);
+                    tv.setId(i);
+                    page.getTableViews().add(tv);
+                    i++;
+                }
+            }
+            schema.setPages(pages);
+            conn.close();
+        }
     }
 
     /**
      * Saves the positions in the already populated table views
      * @throws java.lang.Exception
      */
-    public void saveTablePositions(SchemaPage page) throws Exception{
+    public void saveTablePositions(SchemaPage page) throws Exception {
         Connection conn = iDAO.getConnection();
         iDAO.verifySchema(page.getSchema().getName(), conn);
         iDAO.saveSchemaPage(page, conn);
@@ -211,16 +221,15 @@ public class SchemaController {
         conn.close();
     }
 
-/**
- * public access method
- * @param resort
- */
+    /**
+     * public access method
+     * @param resort
+     */
     public void resortTableViews(SchemaPage currentPage) {
-        tvSorter.SortAction(currentPage,true);
+        tvSorter.SortAction(currentPage, true);
         tvSorter.calcLines(currentPage);
         currentPage.calcDimensions();
     }
-
 
     public void saveTableViews(SchemaPage currentPage) {
         try {
@@ -234,5 +243,4 @@ public class SchemaController {
             e.printStackTrace();
         }
     }
-
 }
