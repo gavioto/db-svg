@@ -22,21 +22,17 @@
        UNIX, Linux, and MacOSX Installation Instructions:
 -------------------------------------------------------------------
 1.  Copy ./dist/DB-SVG.war into your Tomcat (or similar Java Server) WebApps directory.
-2.  Create the following directory: /DB-SVG/ and allow the Tomcat User permission 
-        to read and write from it.
-3.  Edit dbs.xml to match your databases and copy it into the /DB-SVG/ folder.
-4.  Restart Tomcat
+2.  Restart Tomcat
+3.  Navigate to /DB-SVG and enter database connection values.
 
 -------------------------------------------------------------------
                Windows Installation Instructions:
 -------------------------------------------------------------------
-Same as above, except create the directory at C:\DB-SVG\.
-
+Same as above.
 
     
-    Alternatively can change the path in the web.xml to whatever you
-    want by unzipping the .war file, modifying the path, and then zipping
-    it once again.
+    If there are problems writing to the internal SQLite database, you can change
+    the path in the web.xml file.
     
     
     
