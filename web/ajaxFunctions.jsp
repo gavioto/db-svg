@@ -24,6 +24,10 @@ import="java.sql.*" %><%@page
 import="DBViewer.objects.model.*" %><%@page
 import="DBViewer.objects.view.*" %><%@page
 import="DBViewer.controllers.*" %><%
+
+
+/// this page has been deprecated, and functionality moved to the ModelViewController
+
     String dbi = request.getParameter("dbi");
     String pageid = request.getParameter("page");
     if (pageid==null) {
@@ -48,7 +52,7 @@ if (id!=null && x_pos!=null && y_pos!=null) {
 
     int i = Integer.parseInt(id);
     sPage.setTableViewPosition(i, x_pos, y_pos);
-    %>Table Saved <%=id%> <%=x_pos%>,<%=y_pos%><%
+    %>Table position set: <%=id%> <%=x_pos%>,<%=y_pos%><%
 }
 
 boolean refresh = request.getParameter("refresh")!=null;

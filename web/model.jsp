@@ -46,20 +46,17 @@ var currentDragx;
 var currentDragy;
 
 <%
+// retreive needed variables from request & session
+
     String dbi = request.getParameter("dbi");
     String pageid = request.getParameter("page");
     if (pageid==null) {
         pageid = (String)request.getSession().getAttribute("pageid");
     }
     
-    SortedSchema currentSchema = new SortedSchema();
-    if (request.getSession().getAttribute("CurrentSchema")==null || request.getSession().getAttribute("CurrentSchema").getClass()!=currentSchema.getClass()) {
-        request.getSession().setAttribute("CurrentSchema",currentSchema);
-    } else {
-        currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
-    }
-    SchemaController sc = SchemaController.getInstance();
-    SchemaPage sPage = sc.prepareSchema(currentSchema,request.getSession(), dbi, pageid);
+    SortedSchema currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
+    SchemaPage sPage = (SchemaPage)request.getSession().getAttribute("CurrentPage");
+    
 %>
 
   var transx = (-1*<%= sPage.getTransx() %>)-30;
@@ -81,7 +78,7 @@ $(function() {
           } 
       });
       $('#saver').click(function(){
-           $.post("ajaxFunctions.jsp", { "save": "true" },
+           $.post("Model", { "m": "save" },
            function(data){
              alert(data);
            });
@@ -89,7 +86,7 @@ $(function() {
       });
 
       $('#sorter').click(function(){
-           $.post("ajaxFunctions.jsp", { "refresh": "true" },
+           $.post("Model", { "m": "refresh" },
            function(data){
             // alert("Data Loaded: " + data);
             location.reload(true);
@@ -105,7 +102,7 @@ $(function() {
     
     function tableUp(evt) {
         onTable = false;
-        $.post("ajaxFunctions.jsp", { "name": evt.id, "x": currentDragx, "y": currentDragy },
+        $.post("Model", { "m": "setTablePosition", "name": evt.id, "x": currentDragx, "y": currentDragy },
            function(data){
             // alert("Data Loaded: " + data);
             location.reload(true);
@@ -154,7 +151,7 @@ $(function() {
 <a href="#"><div class="tab"><%= p.getTitle() %></div></a><% } %>
         </div><% } %>
         <div class="menu">
-            <a href="Menu">Back to Menu</a><a href="setup.jsp?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#ajaxFunctions.jsp?refresh=true">Re-sort</a><a id="saver" href="#ajaxFunctions.jsp?save=true">Save</a><a href="schema.svg.jsp" target="_blank">Download</a><span class="coord" id="coord" style="display:none">x,y</span>
+            <a href="Menu">Back to Menu</a><a href="Setup?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#Model?m=refresh">Re-sort</a><a id="saver" href="#Model?m=save">Save</a><a href="schema.svg.jsp" target="_blank">Download</a><span class="coord" id="coord" style="display:none">x,y</span>
         </div>
         <div class="svgwrapper" style="width:<%= sPage.getWidth() %>px;height:<%= sPage.getHeight() %>px;">
             <div id="svgwindow" class="svgwindow"></div>
