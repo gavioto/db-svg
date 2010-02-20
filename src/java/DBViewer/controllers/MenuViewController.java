@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import DBViewer.models.*;
+import DBViewer.objects.view.SortedSchema;
 import java.io.PrintWriter;
 import java.util.*;
 import javax.naming.Context;
@@ -78,7 +79,8 @@ public class MenuViewController extends HttpServlet {
             try {
                 if (!isValid) {
                     out.println("0");
-                } else {ConnectionWrapper cw = new ConnectionWrapper();
+                } else {
+                    ConnectionWrapper cw = new ConnectionWrapper();
                     cw.setTitle(title);
                     cw.setUrl(url);
                     cw.setDriver(driver);
@@ -96,7 +98,72 @@ public class MenuViewController extends HttpServlet {
                         try {
                             conn.close();
                         } catch (Exception ex) {
-                            // It's probably already closed or never opened but well trace it anyway
+                            // It's probably already closed or never opened but we'll trace it anyway
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+
+            } finally {
+                out.close();
+            }
+// ----------------------------------->   SAVE EXISTING CONNECTION ACTION
+        } else if (m != null && m.equals("saveConnection")) {
+            InternalDataDAO iDAO = (InternalDataDAO) request.getSession().getAttribute("iDAO");
+
+            String dbi = request.getParameter("dbi");
+            String title = request.getParameter("title");
+            String url = request.getParameter("url");
+            String driver = request.getParameter("driver");
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+
+            boolean isValid = false;
+
+            if (title != null && !title.equals("") && url != null && !url.equals("")
+                    && driver != null && !driver.equals("") && username != null && !username.equals("")
+                    && password != null && !password.equals("") && dbi != null && !dbi.equals("")) {
+                isValid = true;
+            }
+
+            response.setContentType("text/html;charset=UTF-8");
+            PrintWriter out = response.getWriter();
+            try {
+                if (!isValid) {
+                    out.println("0");
+                } else {
+                     Object dbc = request.getSession().getAttribute("DB-Connections");
+                    Map<String, ConnectionWrapper> cwmap = new HashMap<String, ConnectionWrapper>();
+
+                    ConnectionWrapper cw = new ConnectionWrapper();
+
+                    if (dbc != null && dbc.getClass() == cwmap.getClass()) {
+                        cwmap = (Map<String, ConnectionWrapper>) dbc;
+                        cw = cwmap.get(dbi);
+                        request.getSession().setAttribute("CurrentConn", cw);
+                    }
+                    cw.setId(Integer.parseInt(dbi));
+                    cw.setTitle(title);
+                    cw.setUrl(url);
+                    cw.setDriver(driver);
+                    cw.setUsername(username);
+                    cw.setPassword(password);
+                    Connection conn = null;
+
+                    try {
+                        conn = iDAO.getConnection();
+                        iDAO.saveConnectionWrapper(cw, conn);
+                        SortedSchema currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
+                        currentSchema.setName(title);
+                        out.println("1");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        out.println("0");
+                    } finally {
+                        try {
+                            conn.close();
+                        } catch (Exception ex) {
+                            // It's probably already closed or never opened but we'll trace it anyway
                             ex.printStackTrace();
                         }
                     }

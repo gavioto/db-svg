@@ -84,15 +84,10 @@ public class ConnectionWrapper implements Comparable<ConnectionWrapper>,Serializ
         this.username = username;
     }    
 
-      public Connection getConnection() {
-       try {
+      public Connection getConnection() throws Exception{
         Class.forName(driver).newInstance();
         Connection conn = DriverManager.getConnection(url, username, password);
         return conn;
-       } catch (Exception e){
-          e.printStackTrace();
-       }
-       return null;
     }
 
     /**

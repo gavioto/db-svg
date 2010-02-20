@@ -360,6 +360,38 @@ public class InternalDataDAO implements Serializable {
         }
     }
 
+     /**
+     * makes the tables from the internal database
+     * @param t
+     * @param schemaName
+     * @param conn
+     */
+    public Map<String, Table> makeAllTablesForSchema(String SchemaName, Connection conn) {
+
+        Map<String, Table> tables = new HashMap();
+
+        String selectTSQL = "SELECT * FROM table_schema WHERE schema = ?;";
+        try {
+            PreparedStatement ps = conn.prepareStatement(selectTSQL);
+
+            ps.setString(1, SchemaName);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Table t = new Table();
+                t.setName(rs.getString("name"));
+                t.setId(UUID.fromString(rs.getString("id")));
+                t.setSchemaName(SchemaName);
+                tables.put(t.getName(), t);
+            }
+            rs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tables;
+    }
+
     /**
      * Checks to see if there are coordinates for the current table in the
      * internal DB. If not, it returns false.
