@@ -26,6 +26,8 @@
 <%@page import="DBViewer.controllers.*" %><%
 
     SortedSchema currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
+    ConnectionWrapper cw = (ConnectionWrapper)request.getSession().getAttribute("CurrentConn");
+
 %>
 <h3 class="ui-widget-header ui-corner-all">Schema Information: <%= currentSchema.getName() %></h3>
 <table class="info">
@@ -35,7 +37,20 @@
     <tr>
         <td class="label">Tables: </td><td class="data"><%= currentSchema.getTables().size() %></td>
     </tr>
+    <tr>
+        <td class="label">URL: </td><td class="data"><%= cw.getUrl() %></td>
+    </tr>
+    <tr>
+        <td class="label">Driver: </td><td class="data"><%= cw.getDriver() %></td>
+    </tr>
+    <tr>
+        <td class="label">Username: </td><td class="data"><%= cw.getUsername() %></td>
+    </tr>
 </table>
+    <p>
+        <a href="#" id="editConn" class="frontmenuedit" onclick="showEditConn();">Edit This Connection</a>
+    </p>
+
     <br />
     <h3 class="ui-widget-header ui-corner-all">Text Version </h3>
 <%
@@ -61,3 +76,25 @@ Collections.sort(tables);
              out.println("</ul>");
           }
     %>
+
+    <div id="editConnDialog" class="editDialog ui-dialog" title="Edit Connection">
+        <p>
+            Edit the url and credentials for the database connection. The url and driver should match
+            standard Java JDBC syntax.
+        </p>
+        <span id="validateReqs"></span>
+        <form>
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" value="<%= currentSchema.getName() %>" class="text ui-widget-content"><br>
+            <label for="url">URL</label>
+            <input type="text" name="url" id="url" value="<%= cw.getUrl() %>" class="text ui-widget-content"><br>
+            <label for="driver">Driver</label>
+            <input type="text" name="driver" id="driver" value="<%= cw.getDriver() %>" class="text ui-widget-content"><br>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" value="<%= cw.getUsername() %>" class="text ui-widget-content"><br>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" value="<%= cw.getPassword() %>" class="text ui-widget-content"><br>
+        </form>
+    </div>
+        
+<br>
