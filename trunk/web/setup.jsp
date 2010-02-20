@@ -39,10 +39,60 @@
         <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="css/jq-ui.css" />
         <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/jquery-ui.min.js"></script>
         <script type="text/javascript">
     var dbi = <%= request.getParameter("dbi") %>;
 
     $(function() {
+        var title = $("#title"),
+        url = $("#url"),
+        driver = $("#driver"),
+        username = $("#username"),
+        password = $("#password"),
+        allFields = $([]).add(title).add(url).add(driver).add(username).add(password),
+        reqs = $("#validateReqs");
+
+        $("#editConnDialog").dialog({
+            autoOpen: false,
+            height: 400,
+            width: 420,
+            modal: false,
+            buttons: {
+                Ok: function() {
+                    var bValid = true;
+                    allFields.removeClass('ui-state-error');
+
+                    bValid = bValid && checkLength(title,"Title");
+                    bValid = bValid && checkLength(url,"URL");
+                    bValid = bValid && checkLength(driver,"Driver");
+                    bValid = bValid && checkLength(username,"Username");
+                    bValid = bValid && checkLength(password,"Password");
+
+                    if (bValid) {
+                        $.post("Menu", { 
+                            "m": "saveConnection",
+                            "dbi":"<%= request.getParameter("dbi") %>",
+                            "title": title.val(),
+                            "url": url.val(),
+                            "driver": driver.val(), "username": username.val(),
+                            "password": password.val() },
+                        function(data){
+                            if (data == "0") {
+                                alert("Unable to add connection.");
+                            } else {
+                                window.location.reload();
+                            }
+                        });
+                        $(this).dialog('close');
+                    }
+                },
+                Cancel: function() {
+                    $(this).dialog('close');
+                    resetFields();
+                }
+            }
+
+        });
 
         $('#info').click(function(){
            $.post("Setup", { "m": "info", "dbi": dbi },
@@ -59,7 +109,27 @@
            });
            return false;
       });
+        // show validation requirements
+        function updateReqs(t) {
+            reqs.text(t).effect("highlight",{},1500);
+        }
+        // basic validation
+        function checkLength(o,n) {
+            if ( o.val().length < 1 ) {
+                o.addClass('ui-state-error');
+                updateReqs( n + " is required.");
+                return false;
+            } else {
+                return true;
+            }
+
+        }
     });
+
+    // displays add connection dialog
+    function showEditConn() {
+        $("#editConnDialog").dialog("open");
+    }
 
         </script>
     </head>

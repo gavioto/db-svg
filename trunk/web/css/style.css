@@ -177,22 +177,19 @@ ul {
 li.frontmenuadd {
     list-style: none;
 }
-.frontmenuadd a {
+.frontmenuadd a, a.frontmenuedit {
     color:#888888;
     text-decoration: none;
 }
-.frontmenuadd a:hover {
+.frontmenuadd a:hover, a.frontmenuedit:hover {
     color:#666666;
     text-decoration: none;
 }
-#loadDialog {
+#loadDialog, #addDialog, #removeDialog, #editConnDialog {
     font-size:.8em !important;
 }
 #loadDialog p {
     padding-top:10px;
-}
-#addDialog, #removeDialog {
-    font-size:.8em !important;
 }
 form label {
     display: block;
