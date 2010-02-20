@@ -21,9 +21,12 @@
 
 package DBViewer.controllers;
 
+import DBViewer.models.ConnectionWrapper;
 import DBViewer.objects.view.SchemaPage;
 import DBViewer.objects.view.SortedSchema;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +68,16 @@ public class SetupViewController extends HttpServlet {
 
         request.getSession().setAttribute("CurrentPage", sPage);
 
+        Object dbc = request.getSession().getAttribute("DB-Connections");
+        Map<String, ConnectionWrapper> cwmap = new HashMap<String, ConnectionWrapper>();
+
+        if (dbc != null && dbc.getClass() == cwmap.getClass()) {
+            cwmap = (Map<String, ConnectionWrapper>) dbc;
+            ConnectionWrapper cw = cwmap.get(dbi);
+            request.getSession().setAttribute("CurrentConn", cw);
+        }
+
+
         String m = request.getParameter("m");
 
 // ----------------------------------->   SETUP INFO ACTION
@@ -77,7 +90,7 @@ public class SetupViewController extends HttpServlet {
             getServletConfig().getServletContext().getRequestDispatcher(
                         "/setupPages.jsp").forward(request, response);
 
-// ----------------------------------->   DEFAULT SETUP DISPLAY ACTION
+// ----------------------------------->   EDIT ACTION
         } else if (m!=null && m.equals("edit")) {
             getServletConfig().getServletContext().getRequestDispatcher(
                         "/setupEditConnection.jsp").forward(request, response);

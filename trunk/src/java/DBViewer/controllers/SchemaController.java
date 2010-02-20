@@ -128,9 +128,10 @@ public class SchemaController {
 
             if (dbc != null && dbc.getClass() == cwmap.getClass()) {
                 cwmap = (Map<String, ConnectionWrapper>) dbc;
-
+                Connection conn = null;
+                
                 try {
-                    Connection conn = cwmap.get(dbi).getConnection();
+                    conn = cwmap.get(dbi).getConnection();
                     schema.setTables(dao.getTables(conn, cwmap.get(dbi).getTitle()));
                     schema.setName(cwmap.get(dbi).getTitle());
                     session.setAttribute("CurrentDBI", dbi);
@@ -138,7 +139,44 @@ public class SchemaController {
                     readSchemaPages(schema);
                     // maybe set defaultpage here?
                 } catch (Exception e) {
+                    System.out.println("Unable to Connect to MySQL Database");
                     e.printStackTrace();
+                    Connection iconn = null;
+                    try {
+                        //TODO: save tables and read from internal DB if no connection found
+                        //if the table exists in the internal database already, just read it from there.
+                        //iconn= iDAO.getConnection();
+                        //schema.setTables(iDAO.makeAllTablesForSchema(cwmap.get(dbi).getTitle(), iconn));
+                        Table t = new Table();
+                        t.setName("Unable to Connect");
+                        t.setSchemaName(cwmap.get(dbi).getTitle());
+                        Column c = new ColumnObject();
+                        c.setName(e.toString());
+                        t.getColumns().put(c.getName(), c);
+                        Map<String, Table> tables = new HashMap();
+                        tables.put(t.getName(), t);
+                        schema.setTables(tables);
+                        newTables = true;
+                        readSchemaPages(schema);
+                        
+                    } catch (Exception ie) {
+                        System.out.println("Error Reading Internal Database");
+                        ie.printStackTrace();
+                    } finally {
+                        try {
+                            iconn.close();
+                        } catch (Exception fe) {
+                        System.out.println("Error Closing Internal Database");
+                            fe.printStackTrace();
+                        }
+                    }
+                } finally {
+                    try {
+                        conn.close();
+                    } catch (Exception e) {
+                    System.out.println("Error Closing Database");
+                        e.printStackTrace();
+                    }
                 }
             }
         }
