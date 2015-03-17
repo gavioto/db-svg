@@ -105,6 +105,7 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.4-1201-jdbc4</version>
+			<scope>runtime</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.squirrel-sql.plugins</groupId>
