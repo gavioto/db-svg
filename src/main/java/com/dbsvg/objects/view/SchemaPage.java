@@ -66,10 +66,10 @@ public class SchemaPage implements Comparable<SchemaPage>, Serializable {
 	 * tableviews
 	 */
 	public void calcDimensionsAndTranslatePageToOrigin() {
-		Double minx = null;
-		Double miny = null;
-		Double maxx = null;
-		Double maxy = null;
+		Double minx = (double)ORIGIN_PADDING;
+		Double miny = (double)ORIGIN_PADDING;
+		Double maxx = (double)ORIGIN_PADDING;
+		Double maxy = (double)ORIGIN_PADDING;
 
 		for (TableView tv : tableViews.values()) {
 			double x = tv.getX();
